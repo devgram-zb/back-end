@@ -18,15 +18,15 @@ public class CommentService {
      * 댓글 등록
      */
     public CommentDto addComment(CommentDto commentDto) {
-        Comment comment = commentRepository.save(Comment.builder()
+        Comment comment = Comment.builder()
+            .content(commentDto.getContent())
             .parentCommentSeq(commentDto.getParentCommentSeq())
             .boardSeq(commentDto.getBoardSeq())
             .createdAt(LocalDateTime.now())
             .createdBy(commentDto.getCreatedBy())
-            .content(commentDto.getContent())
             .commentStatus(CommentStatus.POST)
-            .build());
+            .build();
 
-        return CommentDto.from(comment);
+        return CommentDto.from(commentRepository.save(comment));
     }
 }

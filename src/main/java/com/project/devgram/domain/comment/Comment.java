@@ -21,12 +21,14 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentSeq;
+
+    private String content;
     private Long parentCommentSeq;
     private Long boardSeq;
 
     private LocalDateTime createdAt;
     private String createdBy;
 
-    private String content;
     private CommentStatus commentStatus;
+
 }
