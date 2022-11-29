@@ -1,5 +1,6 @@
-package com.project.devgram.domain.comment;
+package com.project.devgram.model.comment;
 
+import com.project.devgram.entity.Comment;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

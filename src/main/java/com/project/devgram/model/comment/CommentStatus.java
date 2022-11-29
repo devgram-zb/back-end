@@ -1,4 +1,4 @@
-package com.project.devgram.domain.comment;
+package com.project.devgram.model.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

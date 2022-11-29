@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import com.project.devgram.domain.comment.Comment;
-import com.project.devgram.domain.comment.CommentDto;
-import com.project.devgram.domain.comment.CommentStatus;
+import com.project.devgram.entity.Comment;
+import com.project.devgram.model.comment.CommentDto;
+import com.project.devgram.model.comment.CommentStatus;
 import com.project.devgram.repository.CommentRepository;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;

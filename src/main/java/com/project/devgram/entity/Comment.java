@@ -1,5 +1,6 @@
-package com.project.devgram.domain.comment;
+package com.project.devgram.entity;
 
+import com.project.devgram.model.comment.CommentStatus;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

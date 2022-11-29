@@ -1,6 +1,6 @@
 package com.project.devgram.controller;
 
-import com.project.devgram.domain.comment.CommentDto;
+import com.project.devgram.model.comment.CommentDto;
 import com.project.devgram.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

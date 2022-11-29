@@ -1,8 +1,8 @@
 package com.project.devgram.service;
 
-import com.project.devgram.domain.comment.Comment;
-import com.project.devgram.domain.comment.CommentDto;
-import com.project.devgram.domain.comment.CommentStatus;
+import com.project.devgram.entity.Comment;
+import com.project.devgram.model.comment.CommentDto;
+import com.project.devgram.model.comment.CommentStatus;
 import com.project.devgram.repository.CommentRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
