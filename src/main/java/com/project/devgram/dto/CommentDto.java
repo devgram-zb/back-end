@@ -1,4 +1,4 @@
-package com.project.devgram.model.comment;
+package com.project.devgram.dto;
 
 import com.project.devgram.entity.Comment;
 import java.time.LocalDateTime;

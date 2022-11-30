@@ -1,8 +1,8 @@
 package com.project.devgram.service;
 
 import com.project.devgram.entity.Comment;
-import com.project.devgram.model.comment.CommentDto;
-import com.project.devgram.model.comment.CommentStatus;
+import com.project.devgram.dto.CommentDto;
+import com.project.devgram.type.CommentStatus;
 import com.project.devgram.repository.CommentRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,6 @@ public class CommentService {
             .content(commentDto.getContent())
             .parentCommentSeq(commentDto.getParentCommentSeq())
             .boardSeq(commentDto.getBoardSeq())
-            .createdAt(LocalDateTime.now())
             .createdBy(commentDto.getCreatedBy())
             .commentStatus(CommentStatus.POST)
             .build();

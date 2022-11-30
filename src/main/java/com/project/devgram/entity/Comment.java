@@ -1,7 +1,6 @@
 package com.project.devgram.entity;
 
-import com.project.devgram.model.comment.CommentStatus;
-import java.time.LocalDateTime;
+import com.project.devgram.type.CommentStatus;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,7 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Comment {
+public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentSeq;
@@ -27,9 +26,8 @@ public class Comment {
     private Long parentCommentSeq;
     private Long boardSeq;
 
-    private LocalDateTime createdAt;
     private String createdBy;
+    private String updatedBy;
 
     private CommentStatus commentStatus;
-
 }
