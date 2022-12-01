@@ -1,13 +1,21 @@
 package com.project.devgram.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.entity.Comment;
+import com.project.devgram.exception.DevGramException;
+import com.project.devgram.exception.errorcode.CommentErrorCode;
 import com.project.devgram.repository.CommentRepository;
 import com.project.devgram.type.CommentStatus;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,5 +66,83 @@ class CommentServiceTest {
         assertEquals(result.getParentCommentSeq(), comment.getParentCommentSeq());
         assertEquals(result.getCreatedAt(), comment.getCreatedAt());
         assertEquals(result.getCreatedBy(), comment.getCreatedBy());
+    }
+
+    @DisplayName("댓글 조회 - 성공")
+    @Test
+    void getCommentList_success() {
+        // given
+        List<Comment> commentList = new ArrayList<>();
+
+        for (long i = 0; i < 11; i++) {
+            commentList.add(Comment.builder()
+                .commentSeq(i)
+                .boardSeq(1L)
+                .content(i + "content")
+                .commentStatus(CommentStatus.POST)
+                .build());
+        }
+
+        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L, CommentStatus.DELETE)).willReturn(
+            Optional.of(commentList));
+
+        // when
+        List<CommentDto> commentDtoList = commentService.getCommentList(1L);
+
+        // then
+        assertEquals(commentDtoList.size(), 11);
+    }
+
+    @DisplayName("댓글 조회 - 실패 - 해당 게시글에 댓글 존재하지 않음")
+    @Test
+    void getCommentList_fail() {
+        // given
+
+        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L, CommentStatus.DELETE)).willReturn(Optional.empty());
+
+        // when
+        DevGramException devGramException = assertThrows(DevGramException.class, () -> commentService.getCommentList(1L));
+
+        // then
+        assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT_FOR_BOARD);
+    }
+
+    @DisplayName("신고 댓글 조회 - 성공")
+    @Test
+    void getAccuseCommentList_success() {
+        // given
+        List<Comment> commentList = new ArrayList<>();
+
+        for (long i = 0; i < 11; i++) {
+            commentList.add(Comment.builder()
+                .commentSeq(i)
+                .boardSeq(1L)
+                .content(i + "content")
+                .commentStatus(CommentStatus.ACCUSE)
+                .build());
+        }
+
+        given(commentRepository.findByCommentStatus(CommentStatus.ACCUSE)).willReturn(
+            Optional.of(commentList));
+
+        // when
+        List<CommentDto> commentDtoList = commentService.getAccusedCommentList();
+
+        // then
+        assertEquals(commentDtoList.size(), 11);
+    }
+
+    @DisplayName("신고 댓글 조회 - 실패 - 신고 댓글이 존재하지 않음")
+    @Test
+    void getAccuseCommentList_fail() {
+        // given
+
+        given(commentRepository.findByCommentStatus(CommentStatus.ACCUSE)).willReturn(Optional.empty());
+
+        // when
+        DevGramException devGramException = assertThrows(DevGramException.class, () -> commentService.getAccusedCommentList());
+
+        // then
+        assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_ACCUSED_COMMENT);
     }
 }
