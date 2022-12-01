@@ -2,6 +2,8 @@ package com.project.devgram.entity;
 
 import com.project.devgram.type.CommentStatus;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,5 +31,6 @@ public class Comment extends BaseEntity {
     private String createdBy;
     private String updatedBy;
 
+    @Enumerated(EnumType.STRING)
     private CommentStatus commentStatus;
 }
