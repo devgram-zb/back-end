@@ -6,6 +6,7 @@ import com.project.devgram.exception.DevGramException;
 import com.project.devgram.exception.errorcode.CommentErrorCode;
 import com.project.devgram.repository.CommentRepository;
 import com.project.devgram.type.CommentStatus;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,17 +37,33 @@ public class CommentService {
      */
     public List<CommentDto> getCommentList(Long boardSeq) {
 
-        return commentRepository.findByBoardSeqAndCommentStatusNot(boardSeq,
+        List<Comment> commentList = commentRepository.findByBoardSeqAndCommentStatusNot(boardSeq,
                 CommentStatus.DELETE)
             .orElseThrow(() -> new DevGramException(
                 CommentErrorCode.NOT_EXISTENT_COMMENT_FOR_BOARD));
+
+        ArrayList<CommentDto> commentDtoList = new ArrayList<>();
+
+        for (Comment comment: commentList) {
+            commentDtoList.add(CommentDto.from(comment));
+        }
+
+        return commentDtoList;
     }
 
     /*
      * 신고 댓글 조회(관리자)
      */
     public List<CommentDto> getAccusedCommentList() {
-        return commentRepository.findByCommentStatus(CommentStatus.ACCUSE)
+        List<Comment> commentList = commentRepository.findByCommentStatus(CommentStatus.ACCUSE)
             .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_ACCUSED_COMMENT));
+
+        ArrayList<CommentDto> commentDtoList = new ArrayList<>();
+
+        for (Comment comment: commentList) {
+            commentDtoList.add(CommentDto.from(comment));
+        }
+
+        return commentDtoList;
     }
 }
