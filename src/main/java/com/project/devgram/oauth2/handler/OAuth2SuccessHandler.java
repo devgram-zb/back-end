@@ -1,13 +1,13 @@
 package com.project.devgram.oauth2.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.project.devgram.dto.UserDto;
 import com.project.devgram.dto.UserRequestMapper;
 import com.project.devgram.oauth2.token.Token;
 import com.project.devgram.oauth2.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -24,7 +24,8 @@ import java.io.PrintWriter;
 @Slf4j
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-
+    @Value("${jwt.header}")
+    private String header;
 private final TokenService tokenService;
 private final UserRequestMapper mapper;
 
@@ -44,7 +45,7 @@ private final UserRequestMapper mapper;
         log.info("토큰 {} ",token);
 
 
-        response.addHeader("Authentication", token.getToken());
+        response.addHeader(header, token.getToken());
         response.addHeader("Refresh", token.getRefreshToken());
         response.setContentType("application/json;charset=UTF-8");
 

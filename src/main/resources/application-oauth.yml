@@ -10,5 +10,8 @@ spring:
             client-id: {clientId }
             client-secret: {ClientSecret}
 
+jwt:
+  header: Authorization
+  secretKey: {secretKey}
 ## secret 키는 절대 github에 올리면 안됨. 대참사일어남.
 

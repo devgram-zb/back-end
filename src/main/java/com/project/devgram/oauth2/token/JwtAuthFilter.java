@@ -17,17 +17,19 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthFilter extends GenericFilterBean {
+
     private final TokenService tokenService;
     private final UserRepository userRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
 
         String token =((HttpServletRequest)request).getHeader("Authentication");
 
@@ -61,7 +63,7 @@ public class JwtAuthFilter extends GenericFilterBean {
 
     public Authentication getAuthentication(User member) {
         return new UsernamePasswordAuthenticationToken(member, "",
-                Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }
 
