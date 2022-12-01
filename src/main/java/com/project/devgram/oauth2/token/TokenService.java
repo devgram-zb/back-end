@@ -1,8 +1,11 @@
 package com.project.devgram.oauth2.token;
 
+import com.project.devgram.oauth2.exception.TokenParsingException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -10,14 +13,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 
 @Service
 @Slf4j
 public class TokenService {
 
 
-    private String secretKey="c2lsdmVybmluZS10ZwdadasWNoLXNwcmluZy1ib29" +
-                             "0LWp3dC10dXRvcmlhbC1zZWNyZXQtcoifwflkwejflkkflskldflewmlf";
+    @Value("${jwt.secretKey}")
+    private String secretKey;
 
 
 
@@ -90,6 +94,24 @@ public class TokenService {
         return false;
     }
 
+    public String getUsername(final String token) throws TokenParsingException {
+
+        final String payloadJWT = token.split("\\.")[1];
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+
+        final String payload = new String(decoder.decode(payloadJWT));
+        BasicJsonParser jsonParser = new BasicJsonParser();
+        Map<String, Object> jsonArray = jsonParser.parseMap(payload);
+
+        if (!jsonArray.containsKey("sub")) {
+            throw new TokenParsingException("유효하지 않은 AccessToken 입니다");
+        }
+        log.info("토큰 파싱 확인: "+jsonArray.get("sub").toString());
+
+        return jsonArray.get("sub").toString();
+
+    }
+
     private Key getSignKey(String secretKey) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -100,6 +122,7 @@ public class TokenService {
         return Jwts.parserBuilder().setSigningKey(secretKey.getBytes())
                 .build().parseClaimsJws(token).getBody().getSubject();
     }
+
 
 
 }
