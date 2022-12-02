@@ -58,20 +58,6 @@ public class TokenService {
     }
 
 
-    public boolean verifyToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
-            return claims.getBody()
-                    .getExpiration()
-                    .after(new Date());
-        } catch (Exception e) {
-            log.error("토큰이 불일치");
-            return false;
-        }
-    }
 
     public boolean validateToken(String token){
         try {
