@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    ### dataSource info - mysql ###
+    include: secret
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
