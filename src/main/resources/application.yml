@@ -1,14 +1,17 @@
 spring:
-  profiles:
-    ### dataSource info - mysql ###
-    include: secret
+  datasource:
+    url: jdbc:mysql://localhost:3306/devgram
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1
 
   jpa:
     generate-ddl: true
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
+    database: mysql
+
+logging:
+  level:
+    root: info
