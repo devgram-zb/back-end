@@ -1,39 +1,69 @@
 package com.project.devgram.service;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.project.devgram.dto.CategoryDto;
 import com.project.devgram.entity.Category;
 import com.project.devgram.repository.ICategoryRepository;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 class CategoryServiceImplTest {
 
-	@Mock
+	@Autowired
 	private ICategoryService categoryService;
-	@Mock
+	@Autowired
 	private ICategoryRepository repository;
 
 	@Test
-	void CategoryList(){
+	@DisplayName("Category List Test")
+	void CategoryList() {
 
-		//given(변수 설정)
-		Category category = Category.builder().
-		category_seq(1L)
-			.name("카테고리목록테스트용")
-			.order(1)
+		List<Category> categories = repository.findAll();
+
+		if (categories.isEmpty()) {
+			System.out.println("List is Empty");
+		} else {
+			System.out.println("List is not Empty");
+		}
+	}
+
+	@Test
+	@DisplayName("Category Add Test")
+	void add() {
+
+		CategoryDto parameter = CategoryDto.builder()
+			.category_Seq(1L)
+			.name("Test1")
+			.color("White")
 			.build();
 
-		// when(실제 액션)
+		boolean result = categoryService.add(parameter);
 
-		List<CategoryDto> list = categoryService.list();
+		assertTrue(result);
+		if (result == true) {
+			System.out.println("add Test Success");
+		}
 
-		//then
 
-		assertNotNull(repository);
+	}
+
+
+	@Test
+	@DisplayName("Category Delete Test")
+	void del() {
+		CategoryDto parameter = CategoryDto.builder()
+			.category_Seq(1L).build();
+		boolean result = categoryService.del(parameter.getCategory_Seq());
+		assertTrue(result);
+		if (result == true) {
+			System.out.println("delete Test Success");
+		}
 	}
 }
