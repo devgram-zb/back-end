@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,7 @@ public class FollowService {
     private final UserRepository userRepository;
 
 
+    @Transactional
     public UserResponse followAdd(FollowDto dto) {
         log.info("dtos : {} ", dto);
 
@@ -36,7 +38,10 @@ public class FollowService {
         if(optionalUser.isPresent() && optionalFollowing.isPresent() && followList.size() == 0) {
             // 내가 팔로우 신청을 했을때
            User user = optionalUser.get();
+           user.setFollowCount(user.getFollowCount()+1);
+
            User followingUser = optionalFollowing.get();
+           followingUser.setFollowerCount(user.getFollowerCount()+1);
 
            User follower = User.builder()
                    .userSeq(user.getUserSeq())
