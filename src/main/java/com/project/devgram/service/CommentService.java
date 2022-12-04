@@ -1,12 +1,13 @@
 package com.project.devgram.service;
 
-import com.project.devgram.entity.Comment;
 import com.project.devgram.dto.CommentDto;
+import com.project.devgram.entity.Comment;
+import com.project.devgram.entity.CommentAccuse;
 import com.project.devgram.exception.DevGramException;
 import com.project.devgram.exception.errorcode.CommentErrorCode;
-import com.project.devgram.type.CommentStatus;
+import com.project.devgram.repository.CommentAccuseRepository;
 import com.project.devgram.repository.CommentRepository;
-import java.time.LocalDateTime;
+import com.project.devgram.type.CommentStatus;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final CommentAccuseRepository commentAccuseRepository;
 
     /*
      * 댓글 등록
@@ -82,5 +84,27 @@ public class CommentService {
         comment.setCommentStatus(CommentStatus.DELETE);
 
         return CommentDto.from(commentRepository.save(comment));
+    }
+
+    /*
+     * 댓글 신고
+     */
+    public CommentDto accuseComment(Long commentSeq) {
+        Comment comment = commentRepository.findByCommentSeq(commentSeq)
+            .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
+
+        if (comment.getCommentStatus().equals(CommentStatus.POST)) {
+            comment.setCommentStatus(CommentStatus.ACCUSE);
+            commentRepository.save(comment);
+        }
+
+        CommentAccuse commentAccuse = CommentAccuse.builder()
+            .commentSeq(comment.getCommentSeq())
+            .content(comment.getContent())
+            .build();
+
+        commentAccuseRepository.save(commentAccuse);
+
+        return CommentDto.from(comment);
     }
 }

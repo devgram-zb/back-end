@@ -50,4 +50,12 @@ public class CommentServiceController {
     public CommentDto deleteComment(@RequestParam Long commentSeq) {
         return commentService.deleteComment(commentSeq);
     }
+
+    /*
+     * 댓글 신고
+     */
+    @PostMapping("/accuse")
+    public CommentDto accuseComment(@RequestParam Long commentSeq) {
+        return commentService.accuseComment(commentSeq);
+    }
 }
