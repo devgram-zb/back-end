@@ -1,9 +1,11 @@
 package com.project.devgram.controller;
 
+import com.project.devgram.dto.FollowDto;
 import com.project.devgram.dto.UserDto;
 import com.project.devgram.oauth2.exception.TokenParsingException;
 import com.project.devgram.oauth2.response.UserResponse;
 import com.project.devgram.oauth2.token.TokenService;
+import com.project.devgram.service.FollowService;
 import com.project.devgram.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ private final TokenService tokenService;
 
 private final UserService userService;
 
+private final FollowService followService;
+
 
     @GetMapping("/api/loginForm")
     public  String login(){
@@ -38,7 +42,7 @@ private final UserService userService;
 
     @GetMapping("/api/user")
     @ResponseBody
-    public ResponseEntity getUserDetails(HttpServletRequest request) throws TokenParsingException {
+    public ResponseEntity<UserDto> getUserDetails(HttpServletRequest request) throws TokenParsingException {
 
 
         String token= request.getHeader("Authentication");
@@ -56,7 +60,7 @@ private final UserService userService;
 
     @PutMapping("/api/user")
     @ResponseBody
-    public ResponseEntity updateUserDetails(HttpServletRequest request,@RequestBody UserDto dto) throws TokenParsingException {
+    public ResponseEntity<UserResponse> updateUserDetails(HttpServletRequest request,@RequestBody UserDto dto) throws TokenParsingException {
 
 
         String token= request.getHeader("Authentication");
@@ -66,6 +70,18 @@ private final UserService userService;
         UserResponse users = userService.updateUserDetails(dto);
 
         return ResponseEntity.ok(users);
+    }
+
+    @PostMapping("/api/user/follow")
+    @ResponseBody
+    public ResponseEntity<UserResponse> followingUsers(HttpServletRequest request,@RequestBody FollowDto dto) throws TokenParsingException {
+
+        String token= request.getHeader("Authentication");
+        dto.setUsername(usernameMaker(token));
+
+        UserResponse userFollow = followService.followAdd(dto);
+
+        return ResponseEntity.ok(userFollow);
     }
 
     private String usernameMaker(String username) throws TokenParsingException {

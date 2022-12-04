@@ -2,8 +2,11 @@ package com.project.devgram.entity;
 
 import com.project.devgram.type.ROLE;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Builder
@@ -12,7 +15,8 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseTimeEntity {
+@DynamicUpdate
+public class User extends BaseEntity {
 	@Id // primary key
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userSeq;
@@ -29,5 +33,16 @@ public class User extends BaseTimeEntity {
 
 	private int followCount;
 	private int followerCount;
+
+	@Builder.Default
+	@OneToMany(mappedBy = "following",cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<Follow> followingList = new ArrayList<>() ;
+
+	@Builder.Default
+	@OneToMany(mappedBy = "follower",cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<Follow> followerList = new ArrayList<>() ;
+
+
+
 
 }
