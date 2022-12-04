@@ -81,7 +81,8 @@ class CommentServiceTest {
                 .build());
         }
 
-        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L, CommentStatus.DELETE)).willReturn(
+        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L,
+            CommentStatus.DELETE)).willReturn(
             Optional.of(commentList));
 
         // when
@@ -96,13 +97,16 @@ class CommentServiceTest {
     void getCommentList_fail() {
         // given
 
-        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L, CommentStatus.DELETE)).willReturn(Optional.empty());
+        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L,
+            CommentStatus.DELETE)).willReturn(Optional.empty());
 
         // when
-        DevGramException devGramException = assertThrows(DevGramException.class, () -> commentService.getCommentList(1L));
+        DevGramException devGramException = assertThrows(DevGramException.class,
+            () -> commentService.getCommentList(1L));
 
         // then
-        assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT_FOR_BOARD);
+        assertEquals(devGramException.getErrorCode(),
+            CommentErrorCode.NOT_EXISTENT_COMMENT_FOR_BOARD);
     }
 
     @DisplayName("신고 댓글 조회 - 성공")
@@ -135,12 +139,76 @@ class CommentServiceTest {
     void getAccuseCommentList_fail() {
         // given
 
-        given(commentRepository.findByCommentStatus(CommentStatus.ACCUSE)).willReturn(Optional.empty());
+        given(commentRepository.findByCommentStatus(CommentStatus.ACCUSE)).willReturn(
+            Optional.empty());
 
         // when
-        DevGramException devGramException = assertThrows(DevGramException.class, () -> commentService.getAccusedCommentList());
+        DevGramException devGramException = assertThrows(DevGramException.class,
+            () -> commentService.getAccusedCommentList());
 
         // then
-        assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_ACCUSED_COMMENT);
+        assertEquals(devGramException.getErrorCode(),
+            CommentErrorCode.NOT_EXISTENT_ACCUSED_COMMENT);
+    }
+
+    @DisplayName("댓글 삭제 - 성공")
+    @Test
+    void deleteComment_success() {
+        // given
+        Comment comment = Comment.builder()
+            .commentSeq(1L)
+            .commentStatus(CommentStatus.ACCUSE)
+            .build();
+
+        given(commentRepository.findByCommentSeq(1L)).willReturn(
+            Optional.of(comment));
+
+        given(commentRepository.save(comment)).willReturn(comment);
+
+        // when
+        CommentDto result = commentService.deleteComment(1L);
+
+        // then
+        assertEquals(result.getCommentStatus(), CommentStatus.DELETE);
+    }
+
+    @DisplayName("댓글 삭제 - 실패 - 존재하지 않는 댓글")
+    @Test
+    void deleteComment_fail_notExistent() {
+        // given
+        Comment comment = Comment.builder()
+            .commentSeq(1L)
+            .commentStatus(CommentStatus.ACCUSE)
+            .build();
+
+        given(commentRepository.findByCommentSeq(1L)).willReturn(
+            Optional.empty());
+
+        // when
+        DevGramException devGramException = assertThrows(DevGramException.class,
+            () -> commentService.deleteComment(1L));
+
+        // then
+        assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT);
+    }
+
+    @DisplayName("댓글 삭제 - 실패 - 이미 삭제된 댓글")
+    @Test
+    void deleteComment_fail_alreadyDeleted() {
+        // given
+        Comment comment = Comment.builder()
+            .commentSeq(1L)
+            .commentStatus(CommentStatus.DELETE)
+            .build();
+
+        given(commentRepository.findByCommentSeq(1L)).willReturn(
+            Optional.of(comment));
+
+        // when
+        DevGramException devGramException = assertThrows(DevGramException.class,
+            () -> commentService.deleteComment(1L));
+
+        // then
+        assertEquals(devGramException.getErrorCode(), CommentErrorCode.ALREADY_DELETED_COMMENT);
     }
 }

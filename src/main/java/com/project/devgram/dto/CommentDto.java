@@ -1,6 +1,7 @@
 package com.project.devgram.dto;
 
 import com.project.devgram.entity.Comment;
+import com.project.devgram.type.CommentStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,10 +17,11 @@ public class CommentDto {
     private Long boardSeq;
     private LocalDateTime createdAt;
     private String createdBy;
+    private CommentStatus commentStatus;
 
     public static CommentDto from(Comment comment) {
         return new CommentDto(comment.getCommentSeq(), comment.getContent(),
             comment.getParentCommentSeq(), comment.getBoardSeq(), comment.getCreatedAt(),
-            comment.getCreatedBy());
+            comment.getCreatedBy(), comment.getCommentStatus());
     }
 }

@@ -4,6 +4,7 @@ import com.project.devgram.dto.CommentDto;
 import com.project.devgram.service.CommentService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,5 +41,13 @@ public class CommentServiceController {
     @GetMapping("/accuse")
     public List<CommentDto> getAccusedCommentList() {
         return commentService.getAccusedCommentList();
+    }
+
+    /*
+     * 댓글 삭제
+     */
+    @DeleteMapping
+    public CommentDto deleteComment(@RequestParam Long commentSeq) {
+        return commentService.deleteComment(commentSeq);
     }
 }

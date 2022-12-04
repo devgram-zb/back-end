@@ -45,7 +45,7 @@ public class CommentService {
 
         ArrayList<CommentDto> commentDtoList = new ArrayList<>();
 
-        for (Comment comment: commentList) {
+        for (Comment comment : commentList) {
             commentDtoList.add(CommentDto.from(comment));
         }
 
@@ -61,10 +61,26 @@ public class CommentService {
 
         ArrayList<CommentDto> commentDtoList = new ArrayList<>();
 
-        for (Comment comment: commentList) {
+        for (Comment comment : commentList) {
             commentDtoList.add(CommentDto.from(comment));
         }
 
         return commentDtoList;
+    }
+
+    /*
+     * 댓글 삭제
+     */
+    public CommentDto deleteComment(Long commentSeq) {
+        Comment comment = commentRepository.findByCommentSeq(commentSeq)
+            .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
+
+        if (comment.getCommentStatus().equals(CommentStatus.DELETE)) {
+            throw new DevGramException(CommentErrorCode.ALREADY_DELETED_COMMENT);
+        }
+
+        comment.setCommentStatus(CommentStatus.DELETE);
+
+        return CommentDto.from(commentRepository.save(comment));
     }
 }
