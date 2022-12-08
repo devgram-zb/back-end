@@ -1,5 +1,6 @@
 package com.project.devgram.controller;
 
+import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.service.CommentService;
 import java.util.List;
@@ -55,7 +56,15 @@ public class CommentServiceController {
      * 댓글 신고
      */
     @PostMapping("/accuse")
-    public CommentDto accuseComment(@RequestParam Long commentSeq) {
-        return commentService.accuseComment(commentSeq);
+    public CommentAccuseDto accuseComment(CommentAccuseDto commentAccuseDto) {
+        return commentService.accuseComment(commentAccuseDto);
+    }
+
+    /*
+     * 특정 신고 댓글 신고 내역 조회
+     */
+    @GetMapping("/accuse")
+    public List<CommentAccuseDto> getAccusedCommentDetail(@RequestParam Long commentSeq) {
+        return commentService.getAccusedCommentDetail(commentSeq);
     }
 }

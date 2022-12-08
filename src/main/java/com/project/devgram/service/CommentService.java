@@ -1,5 +1,6 @@
 package com.project.devgram.service;
 
+import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.entity.Comment;
 import com.project.devgram.entity.CommentAccuse;
@@ -11,6 +12,8 @@ import com.project.devgram.type.CommentStatus;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -89,8 +92,8 @@ public class CommentService {
     /*
      * 댓글 신고
      */
-    public CommentDto accuseComment(Long commentSeq) {
-        Comment comment = commentRepository.findByCommentSeq(commentSeq)
+    public CommentAccuseDto accuseComment(CommentAccuseDto commentAccuseDto) {
+        Comment comment = commentRepository.findByCommentSeq(commentAccuseDto.getCommentSeq())
             .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
 
         if (comment.getCommentStatus().equals(CommentStatus.POST)) {
@@ -99,12 +102,26 @@ public class CommentService {
         }
 
         CommentAccuse commentAccuse = CommentAccuse.builder()
-            .commentSeq(comment.getCommentSeq())
-            .content(comment.getContent())
+            .commentSeq(commentAccuseDto.getCommentSeq())
+            .accuseReason(commentAccuseDto.getAccuseReason())
             .build();
 
-        commentAccuseRepository.save(commentAccuse);
+        return CommentAccuseDto.from(commentAccuseRepository.save(commentAccuse));
+    }
 
-        return CommentDto.from(comment);
+    /*
+     * 특정 신고 댓글 신고 내역 조회
+     */
+    public List<CommentAccuseDto> getAccusedCommentDetail(Long commentSeq) {
+        List<CommentAccuse> commentAccuseList = commentAccuseRepository.findByCommentSeq(
+                commentSeq, sortByCreatedAtDesc())
+            .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_ACCUSE_HISTORY));
+
+        return CommentAccuseDto.fromList(commentAccuseList);
+    }
+
+    // 생성 날짜 내림차순 정렬
+    public Sort sortByCreatedAtDesc() {
+        return Sort.by(Direction.DESC, "createdAt");
     }
 }

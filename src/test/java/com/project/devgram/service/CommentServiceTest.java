@@ -3,9 +3,9 @@ package com.project.devgram.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
+import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.entity.Comment;
 import com.project.devgram.entity.CommentAccuse;
@@ -222,50 +222,99 @@ class CommentServiceTest {
     @Test
     void accuseComment_success() {
         // given
+        CommentAccuseDto commentAccuseDto = CommentAccuseDto.builder()
+            .commentAccuseSeq(1L)
+            .commentSeq(1L)
+            .accuseReason("testReason")
+            .build();
+
         Comment comment = Comment.builder()
             .commentSeq(1L)
-            .content("test")
             .commentStatus(CommentStatus.POST)
             .build();
 
         CommentAccuse commentAccuse = CommentAccuse.builder()
-            .content(comment.getContent())
-            .commentSeq(comment.getCommentSeq())
+            .commentAccuseSeq(commentAccuseDto.getCommentAccuseSeq())
+            .commentSeq(commentAccuseDto.getCommentSeq())
+            .accuseReason(commentAccuseDto.getAccuseReason())
             .build();
 
-
-        given(commentRepository.findByCommentSeq(anyLong())).willReturn(
+        given(commentRepository.findByCommentSeq(commentAccuseDto.getCommentSeq())).willReturn(
             Optional.of(comment));
 
-        given(commentRepository.save(comment)).willReturn(comment);
+        given(commentRepository.save(comment)).willReturn(Comment.builder()
+            .commentSeq(1L)
+            .commentStatus(CommentStatus.ACCUSE)
+            .build());
 
         given(commentAccuseRepository.save(any())).willReturn(commentAccuse);
 
         // when
-        CommentDto result = commentService.accuseComment(1L);
+        CommentAccuseDto result = commentService.accuseComment(commentAccuseDto);
 
         // then
-        assertEquals(result.getCommentStatus(), CommentStatus.ACCUSE);
+        assertEquals(result.getCommentSeq(), commentAccuseDto.getCommentSeq());
+        assertEquals(result.getCommentAccuseSeq(), commentAccuseDto.getCommentAccuseSeq());
+        assertEquals(result.getAccuseReason(), commentAccuseDto.getAccuseReason());
     }
 
-    @DisplayName("댓글 신고 - 실패 - 존재 하지 않는 댓글")
+    @DisplayName("댓글 신고 - 실패 - 댓글이 존재하지 않음")
     @Test
     void accuseComment_fail_notExistent() {
         // given
-        Comment comment = Comment.builder()
+        CommentAccuseDto commentAccuseDto = CommentAccuseDto.builder()
+            .commentAccuseSeq(1L)
             .commentSeq(1L)
-            .content("test")
-            .commentStatus(CommentStatus.POST)
+            .accuseReason("testReason")
             .build();
 
-        given(commentRepository.findByCommentSeq(anyLong())).willReturn(
+        given(commentRepository.findByCommentSeq(commentAccuseDto.getCommentSeq())).willReturn(
             Optional.empty());
 
         // when
         DevGramException devGramException = assertThrows(DevGramException.class,
-            () -> commentService.accuseComment(1L));
+            () -> commentService.accuseComment(commentAccuseDto));
 
         // then
         assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT);
+    }
+
+    @DisplayName("특정 신고 댓글 내역 조회 - 성공")
+    @Test
+    void getAccusedCommentDetail_success() {
+        // given
+        List<CommentAccuse> commentAccuseList = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            commentAccuseList.add(CommentAccuse.builder()
+                .commentAccuseSeq((long) i)
+                .commentSeq(1L)
+                .accuseReason("reason")
+                .build());
+        }
+
+        given(commentAccuseRepository.findByCommentSeq(1L,
+            commentService.sortByCreatedAtDesc())).willReturn(Optional.of(commentAccuseList));
+
+        // when
+        List<CommentAccuseDto> commentAccuseDtoList = commentService.getAccusedCommentDetail(1L);
+
+        // then
+        assertEquals(commentAccuseDtoList.size(), commentAccuseList.size());
+    }
+
+    @DisplayName("특정 신고 댓글 내역 조회 - 실패 - 신고 내역 없음")
+    @Test
+    void getAccusedCommentDetail_fail_notExistent() {
+        // given
+        given(commentAccuseRepository.findByCommentSeq(1L,
+            commentService.sortByCreatedAtDesc())).willReturn(Optional.empty());
+
+        // when
+        DevGramException devGramException = assertThrows(DevGramException.class,
+            () -> commentService.getAccusedCommentDetail(1L));
+
+        // then
+        assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_ACCUSE_HISTORY);
     }
 }
