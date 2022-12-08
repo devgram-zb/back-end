@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentAccuseRepository extends JpaRepository<CommentAccuse, Long> {
     Optional<List<CommentAccuse>> findByCommentSeq(Long commentSeq, Sort sort);
+
+    Optional<CommentAccuse> findTop1ByCommentSeq(Long commentSeq, Sort sort);
 }

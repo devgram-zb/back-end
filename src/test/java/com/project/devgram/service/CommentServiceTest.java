@@ -3,6 +3,7 @@ package com.project.devgram.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import com.project.devgram.dto.CommentAccuseDto;
@@ -14,6 +15,7 @@ import com.project.devgram.exception.errorcode.CommentErrorCode;
 import com.project.devgram.repository.CommentAccuseRepository;
 import com.project.devgram.repository.CommentRepository;
 import com.project.devgram.type.CommentStatus;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -123,15 +125,23 @@ class CommentServiceTest {
 
         for (long i = 0; i < 11; i++) {
             commentList.add(Comment.builder()
-                .commentSeq(i)
+                .commentSeq(1L)
                 .boardSeq(1L)
                 .content(i + "content")
                 .commentStatus(CommentStatus.ACCUSE)
                 .build());
         }
 
+        CommentAccuse commentAccuse = CommentAccuse.builder()
+            .commentSeq(1L)
+            .accuseReason("reason")
+            .build();
+
+
         given(commentRepository.findByCommentStatus(CommentStatus.ACCUSE)).willReturn(
             Optional.of(commentList));
+
+        given(commentAccuseRepository.findTop1ByCommentSeq(1L, commentService.sortByCreatedAtDesc())).willReturn(Optional.of(commentAccuse));
 
         // when
         List<CommentDto> commentDtoList = commentService.getAccusedCommentList();

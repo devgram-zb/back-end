@@ -9,6 +9,7 @@ import com.project.devgram.exception.errorcode.CommentErrorCode;
 import com.project.devgram.repository.CommentAccuseRepository;
 import com.project.devgram.repository.CommentRepository;
 import com.project.devgram.type.CommentStatus;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +68,11 @@ public class CommentService {
         ArrayList<CommentDto> commentDtoList = new ArrayList<>();
 
         for (Comment comment : commentList) {
-            commentDtoList.add(CommentDto.from(comment));
+            LocalDateTime latestAccusedAt = commentAccuseRepository.findTop1ByCommentSeq(
+                    comment.getCommentSeq(), sortByCreatedAtDesc()).orElseThrow(
+                    () -> new DevGramException(CommentErrorCode.NOT_EXISTENT_ACCUSE_HISTORY))
+                .getCreatedAt();
+            commentDtoList.add(CommentDto.from(comment, latestAccusedAt));
         }
 
         return commentDtoList;
