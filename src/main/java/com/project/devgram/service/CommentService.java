@@ -125,6 +125,20 @@ public class CommentService {
         return CommentAccuseDto.fromList(commentAccuseList);
     }
 
+    /*
+     * 댓글 상태 업데이트(관리자)
+     */
+    public CommentDto updateCommentStatus(Long commentSeq, CommentStatus commentStatus) {
+        Comment comment = commentRepository.findByCommentSeq(commentSeq)
+            .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
+
+        comment.setCommentStatus(commentStatus);
+
+        commentRepository.save(comment);
+
+        return CommentDto.from(comment);
+    }
+
     // 생성 날짜 내림차순 정렬
     public Sort sortByCreatedAtDesc() {
         return Sort.by(Direction.DESC, "createdAt");

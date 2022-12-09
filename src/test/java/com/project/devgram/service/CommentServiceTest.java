@@ -3,9 +3,7 @@ package com.project.devgram.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-
 import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.entity.Comment;
@@ -15,7 +13,6 @@ import com.project.devgram.exception.errorcode.CommentErrorCode;
 import com.project.devgram.repository.CommentAccuseRepository;
 import com.project.devgram.repository.CommentRepository;
 import com.project.devgram.type.CommentStatus;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -137,11 +134,11 @@ class CommentServiceTest {
             .accuseReason("reason")
             .build();
 
-
         given(commentRepository.findByCommentStatus(CommentStatus.ACCUSE)).willReturn(
             Optional.of(commentList));
 
-        given(commentAccuseRepository.findTop1ByCommentSeq(1L, commentService.sortByCreatedAtDesc())).willReturn(Optional.of(commentAccuse));
+        given(commentAccuseRepository.findTop1ByCommentSeq(1L,
+            commentService.sortByCreatedAtDesc())).willReturn(Optional.of(commentAccuse));
 
         // when
         List<CommentDto> commentDtoList = commentService.getAccusedCommentList();
@@ -326,5 +323,50 @@ class CommentServiceTest {
 
         // then
         assertEquals(devGramException.getErrorCode(), CommentErrorCode.NOT_EXISTENT_ACCUSE_HISTORY);
+    }
+
+    @DisplayName("댓글 상태 업데이트 - 성공")
+    @Test
+    void updateCommentStatus_success() {
+        // given
+        Comment comment = Comment.builder()
+            .commentSeq(1L)
+            .commentStatus(CommentStatus.ACCUSE)
+            .build();
+
+        given(commentRepository.findByCommentSeq(1L)).willReturn(Optional.of(comment));
+
+        given(commentRepository.save(comment)).willReturn(comment);
+
+        // when
+        CommentDto result1 = commentService.updateCommentStatus(1L, CommentStatus.POST);
+        CommentDto result2 = commentService.updateCommentStatus(1L, CommentStatus.DELETE);
+
+        // then
+        assertEquals(result1.getCommentStatus(), CommentStatus.POST);
+        assertEquals(result2.getCommentStatus(), CommentStatus.DELETE);
+    }
+
+    @DisplayName("댓글 상태 업데이트 - 실패 - 댓글이 존재하지 않음")
+    @Test
+    void updateCommentStatus_fail_notExistent() {
+        // given
+        Comment comment = Comment.builder()
+            .commentSeq(1L)
+            .commentStatus(CommentStatus.ACCUSE)
+            .build();
+
+        given(commentRepository.findByCommentSeq(1L)).willReturn(Optional.empty());
+
+        // when
+        DevGramException devGramException1 = assertThrows(DevGramException.class,
+            () -> commentService.updateCommentStatus(1L, CommentStatus.POST));
+
+        DevGramException devGramException2 = assertThrows(DevGramException.class,
+            () -> commentService.updateCommentStatus(1L, CommentStatus.DELETE));
+
+        // then
+        assertEquals(devGramException1.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT);
+        assertEquals(devGramException2.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT);
     }
 }

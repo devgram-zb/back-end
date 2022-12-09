@@ -3,11 +3,13 @@ package com.project.devgram.controller;
 import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.service.CommentService;
+import com.project.devgram.type.CommentStatus;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/comments")
-public class CommentServiceController {
+public class CommentController {
 
     private final CommentService commentService;
 
@@ -56,7 +58,7 @@ public class CommentServiceController {
      * 댓글 신고
      */
     @PostMapping("/accuse")
-    public CommentAccuseDto accuseComment(CommentAccuseDto commentAccuseDto) {
+    public CommentAccuseDto accuseComment(@RequestBody CommentAccuseDto commentAccuseDto) {
         return commentService.accuseComment(commentAccuseDto);
     }
 
@@ -66,5 +68,14 @@ public class CommentServiceController {
     @GetMapping("/accuse")
     public List<CommentAccuseDto> getAccusedCommentDetail(@RequestParam Long commentSeq) {
         return commentService.getAccusedCommentDetail(commentSeq);
+    }
+
+    /*
+     * 댓글 상태 업데이트(관리자)
+     */
+    @PutMapping
+    public CommentDto updateCommentStatus(@RequestParam Long commentSeq, @RequestParam
+        CommentStatus commentStatus) {
+        return commentService.updateCommentStatus(commentSeq, commentStatus);
     }
 }
