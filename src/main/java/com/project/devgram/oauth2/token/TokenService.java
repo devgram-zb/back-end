@@ -28,7 +28,7 @@ public class TokenService {
 
     private final RedisService redisService;
 
-    @PostConstruct
+    @PostConstruct // 빈등록 후 초기화를 시켜주는 어노테이션
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
@@ -43,7 +43,6 @@ public class TokenService {
 
         String token = typoToken(username, role, tokenCheck[0], tokenPeriod);
         String refreshToken = typoToken(username, role, tokenCheck[1], refreshPeriod);
-
 
         redisService.createRefresh(username, refreshToken, tokenCheck[1], refreshPeriod);
         return Token.builder()

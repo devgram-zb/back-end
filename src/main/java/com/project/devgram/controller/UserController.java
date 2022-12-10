@@ -154,7 +154,6 @@ public class UserController {
               @RequestParam(value = "token", required = false) String token
             , @RequestParam(value = "refresh", required = false) String refresh) {
 
-        log.info("token 내꺼내꺼 {} ", token);
 
         response.addHeader("Authentication", token);
         response.addHeader("Refresh", refresh);

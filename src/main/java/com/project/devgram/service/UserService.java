@@ -22,8 +22,7 @@ public class UserService {
 
     public UserDto getUserDetails(String username){
 
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 정보가 없습니다.")));
+        Optional<User> userOptional = userRepository.findByUsername(username);
 
         if(userOptional.isPresent()){
 
@@ -51,8 +50,7 @@ public class UserService {
     public UserResponse updateUserDetails(UserDto dto) {
         log.info("dtos {}",dto);
 
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findByUsername(dto.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 정보가 없습니다.")));
+        Optional<User> userOptional =userRepository.findByUsername(dto.getUsername());
 
         String encPassword = passUtil.encPassword(dto.getPassword());
 

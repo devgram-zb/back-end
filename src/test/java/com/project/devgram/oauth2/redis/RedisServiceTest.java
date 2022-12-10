@@ -28,7 +28,7 @@ class RedisCrudTest {
 
     @AfterEach
     void teardown() {
-        tokenRedisRepository.deleteById(redisUser.getRedisUserId());
+        tokenRedisRepository.deleteById(redisUser.getId());
     }
 
     @Test
@@ -38,11 +38,11 @@ class RedisCrudTest {
         tokenRedisRepository.save(redisUser);
 
         // when
-        RedisUser persistProduct = tokenRedisRepository.findByRedisUserId(redisUser.getRedisUserId())
+        RedisUser persistProduct = tokenRedisRepository.findById(redisUser.getId())
                 .orElseThrow(RuntimeException::new);
 
         // then
-        assertThat(persistProduct.getRedisUserId()).isEqualTo("P0001");
+        assertThat(persistProduct.getId()).isEqualTo("P0001");
         assertThat(persistProduct.getToken()).isEqualTo("token");
     }
 
@@ -51,7 +51,7 @@ class RedisCrudTest {
     void redis_update_test() {
         // given
         tokenRedisRepository.save(redisUser);
-        RedisUser persistProduct = tokenRedisRepository.findByRedisUserId(redisUser.getRedisUserId())
+        RedisUser persistProduct = tokenRedisRepository.findById(redisUser.getId())
                 .orElseThrow(RuntimeException::new);
 
         // when
@@ -70,7 +70,7 @@ class RedisCrudTest {
 
         // when
         tokenRedisRepository.delete(redisUser);
-        Optional<RedisUser> deletedProduct = tokenRedisRepository.findByRedisUserId(redisUser.getRedisUserId());
+        Optional<RedisUser> deletedProduct = tokenRedisRepository.findById(redisUser.getId());
 
         // then
         assertTrue(deletedProduct.isEmpty());

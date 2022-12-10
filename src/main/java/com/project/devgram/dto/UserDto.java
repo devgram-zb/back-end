@@ -82,6 +82,11 @@ public class UserDto {
         this.job= String.valueOf(user.get("job"));
     }
 
-    /*  Map<String,String> apart = (Map<String,String>)address.get("apart");
-        this.apartName = apart.get("apartName");*/
+
+    public void toDto(String id) {
+        this.providerId = id;
+        this.username = "github" + providerId;
+
+    }
+
 }

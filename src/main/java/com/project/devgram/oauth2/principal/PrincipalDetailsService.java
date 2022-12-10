@@ -23,8 +23,7 @@ public class PrincipalDetailsService implements UserDetailsService{
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(username)
-				.orElseThrow(() -> new NullPointerException("해당username에 해당하는 정보가 없습니다.")));
+			Optional<User> optionalUser = userRepository.findByUsername(username);
 		if(optionalUser.isPresent()) {
 			User user = optionalUser.get();
 			return new PrincipalDetails(user);

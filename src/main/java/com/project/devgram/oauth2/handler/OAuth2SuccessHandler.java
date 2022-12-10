@@ -1,7 +1,6 @@
 package com.project.devgram.oauth2.handler;
 
 import com.project.devgram.dto.UserDto;
-import com.project.devgram.dto.UserRequestMapper;
 import com.project.devgram.oauth2.token.Token;
 import com.project.devgram.oauth2.token.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +23,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
 
     private final TokenService tokenService;
-    private final UserRequestMapper mapper;
 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        UserDto userDto = mapper.toDto(oAuth2User);
-        log.info("userDto {}", userDto.getUsername());
+        String username = usernameMaker(oAuth2User);
 
         //토큰 생성
-        Token token = tokenService.generateToken(userDto.getUsername(), "ROLE_USER");
+        Token token = tokenService.generateToken(username, "ROLE_USER");
 
-        log.info("토큰 내꺼{} ", token);
+        log.info("토큰 : {} ", token);
 
         String uri = UriComponentsBuilder.fromUriString("http://localhost:8080/api/oauth/redirect")
                 .queryParam("token", token.getToken())
@@ -48,6 +45,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.sendRedirect(uri);
 
 
+    }
+
+    private String usernameMaker(OAuth2User oAuth2User){
+        String id= String.valueOf((Object) oAuth2User.getAttribute("id"));
+
+        UserDto userDto = new UserDto();
+        userDto.toDto(id);
+        log.info("userDto {}", userDto.getUsername());
+        return userDto.getUsername();
     }
 
 }
