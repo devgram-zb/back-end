@@ -61,6 +61,17 @@ public class Board extends BaseTimeEntity {
 		}
 	}
 
+	public void increaseLikeCount(){
+		this.likeCount = this.likeCount + 1;
+	}
+
+	public void decreaseLikeCount(){
+		if(this.likeCount == 0){
+			throw new IndexOutOfBoundsException("좋아요는 - 가 될수 없습니다.");
+		}
+		this.likeCount = this.likeCount - 1;
+	}
+
 	private void checkIsDeleted() {
 		//TODO : MERGE 이후 적절한 Exception 만들어 해당 내용 변경
 		if (this.status == Status.DELETED) {
