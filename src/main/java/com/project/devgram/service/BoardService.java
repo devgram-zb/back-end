@@ -4,9 +4,10 @@ import com.project.devgram.dto.SearchBoard.Request;
 import com.project.devgram.dto.UpdateBoard;
 import com.project.devgram.entity.Board;
 import com.project.devgram.dto.BoardDto;
+import com.project.devgram.exception.DevGramException;
+import com.project.devgram.exception.errorcode.BoardErrorCode;
 import com.project.devgram.repository.BoardRepository;
 import java.util.List;
-import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,9 +48,8 @@ public class BoardService {
 	}
 
 	public Board getBoard(Long boardSeq) {
-		//TODO: exception 기준 대로 만들어 throw 하는 exception 변경 예정.
 		return boardRepository.findById(boardSeq).orElseThrow(() ->
-			new NoSuchElementException("boardSeq에 해당하는 board가 없습니다."));
+			new DevGramException(BoardErrorCode.CANNOT_FIND_BOARD_BY_BOARDSEQ));
 	}
 
 

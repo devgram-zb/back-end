@@ -4,10 +4,11 @@ import com.project.devgram.dto.BoardAccuseDto;
 import com.project.devgram.dto.SearchBoardAccuse.Request;
 import com.project.devgram.entity.Board;
 import com.project.devgram.entity.User;
+import com.project.devgram.exception.DevGramException;
+import com.project.devgram.exception.errorcode.BoardAccuseErrorCode;
 import com.project.devgram.repository.BoardAccuseRepository;
 import com.project.devgram.repository.UserRepository;
 import java.util.List;
-import javax.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class BoardAccuseService {
 
 	private void findBoardAccuse(Long boardSeq, Long userSeq) {
 		boardAccuseRepository.findByBoard_BoardSeqAndUser_UserSeq(boardSeq, userSeq).ifPresent(boardAccuse -> {
-			throw new EntityExistsException("이미 신고 하셨습니다.");
+			throw new DevGramException(BoardAccuseErrorCode.ALREADY_ACCUSED_BOARD);
 		});
 	}
 

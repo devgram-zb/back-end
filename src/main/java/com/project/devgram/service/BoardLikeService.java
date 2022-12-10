@@ -5,10 +5,11 @@ import com.project.devgram.dto.SearchBoardLike.Request;
 import com.project.devgram.entity.Board;
 import com.project.devgram.entity.BoardLike;
 import com.project.devgram.entity.User;
+import com.project.devgram.exception.DevGramException;
+import com.project.devgram.exception.errorcode.BoardLikeErrorCode;
 import com.project.devgram.repository.BoardLikeRepository;
 import com.project.devgram.repository.UserRepository;
 import java.util.List;
-import javax.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class BoardLikeService {
 	@Transactional
 	public BoardLikeDto registerBoardLike(Long boardSeq, Long userSeq) {
 		boardLikeRepository.findByBoard_BoardSeqAndUser_UserSeq(boardSeq, userSeq).ifPresent(boardLike -> {
-			throw new EntityExistsException("이미 좋아요를 하셨습니다.");
+			throw new DevGramException(BoardLikeErrorCode.ALREADY_LIKED_BOARD);
 		});
 
 		Board board = boardService.getBoard(boardSeq);
@@ -44,7 +45,7 @@ public class BoardLikeService {
 
 	@Transactional
 	public void deleteBoardLike(Long boardLikeSeq) {
-		BoardLike boardLike = boardLikeRepository.findById(boardLikeSeq).orElseThrow(() -> new EntityExistsException("해당 좋아요는 존재하지 않습니다."));
+		BoardLike boardLike = boardLikeRepository.findById(boardLikeSeq).orElseThrow(() -> new DevGramException(BoardLikeErrorCode.LIKE_NOT_EXIST));
 
 		boardLike.getBoard().decreaseLikeCount();
 
