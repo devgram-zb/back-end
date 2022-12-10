@@ -23,6 +23,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentAccuseRepository commentAccuseRepository;
+    public static final Sort sortByCreatedAtDesc = Sort.by(Direction.DESC, "createdAt");
 
     /*
      * 댓글 등록
@@ -74,7 +75,7 @@ public class CommentService {
 
         for (Comment comment : commentList) {
             LocalDateTime latestAccusedAt = commentAccuseRepository.findTop1ByCommentSeq(
-                    comment.getCommentSeq(), sortByCreatedAtDesc()).orElseThrow(
+                    comment.getCommentSeq(), sortByCreatedAtDesc).orElseThrow(
                     () -> new DevGramException(CommentErrorCode.NOT_EXISTENT_ACCUSE_HISTORY))
                 .getCreatedAt();
             commentDtoList.add(CommentDto.from(comment, latestAccusedAt));
@@ -124,7 +125,7 @@ public class CommentService {
      */
     public List<CommentAccuseDto> getAccusedCommentDetail(Long commentSeq) {
         List<CommentAccuse> commentAccuseList = commentAccuseRepository.findByCommentSeq(
-                commentSeq, sortByCreatedAtDesc());
+                commentSeq, sortByCreatedAtDesc);
 
         if (commentAccuseList.isEmpty()) {
             throw new DevGramException(CommentErrorCode.NOT_EXISTENT_ACCUSE_HISTORY);
@@ -148,7 +149,7 @@ public class CommentService {
     }
 
     // 생성 날짜 내림차순 정렬
-    public Sort sortByCreatedAtDesc() {
-        return Sort.by(Direction.DESC, "createdAt");
-    }
+//    public Sort sortByCreatedAtDesc() {
+//        return Sort.by(Direction.DESC, "createdAt");
+//    }
 }

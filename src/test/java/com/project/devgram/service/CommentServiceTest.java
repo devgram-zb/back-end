@@ -137,7 +137,7 @@ class CommentServiceTest {
         given(commentRepository.findByCommentStatus(CommentStatus.ACCUSE)).willReturn(commentList);
 
         given(commentAccuseRepository.findTop1ByCommentSeq(1L,
-            commentService.sortByCreatedAtDesc())).willReturn(Optional.of(commentAccuse));
+            CommentService.sortByCreatedAtDesc)).willReturn(Optional.of(commentAccuse));
 
         // when
         List<CommentDto> commentDtoList = commentService.getAccusedCommentList();
@@ -300,7 +300,7 @@ class CommentServiceTest {
         }
 
         given(commentAccuseRepository.findByCommentSeq(1L,
-            commentService.sortByCreatedAtDesc())).willReturn(commentAccuseList);
+            CommentService.sortByCreatedAtDesc)).willReturn(commentAccuseList);
 
         // when
         List<CommentAccuseDto> commentAccuseDtoList = commentService.getAccusedCommentDetail(1L);
@@ -316,7 +316,7 @@ class CommentServiceTest {
         List<CommentAccuse> commentAccuseList = new ArrayList<>();
 
         given(commentAccuseRepository.findByCommentSeq(1L,
-            commentService.sortByCreatedAtDesc())).willReturn(commentAccuseList);
+            CommentService.sortByCreatedAtDesc)).willReturn(commentAccuseList);
 
         // when
         DevGramException devGramException = assertThrows(DevGramException.class,
