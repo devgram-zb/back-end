@@ -65,7 +65,7 @@ public class CommentController {
     /*
      * 특정 신고 댓글 신고 내역 조회
      */
-    @GetMapping("/accuse")
+    @GetMapping("/accuse/detail")
     public List<CommentAccuseDto> getAccusedCommentDetail(@RequestParam Long commentSeq) {
         return commentService.getAccusedCommentDetail(commentSeq);
     }

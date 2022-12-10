@@ -32,4 +32,12 @@ public class TagController {
     public String deleteTag(@RequestParam Long tagSeq) {
         return tagService.deleteTag(tagSeq);
     }
+
+    /*
+     * 태그 자동 완성
+     */
+    @GetMapping("/autocomplete")
+    public List<TagDto> autocompleteTag(@RequestParam String name) {
+        return tagService.autoCompleteTag(name);
+    }
 }

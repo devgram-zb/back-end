@@ -7,6 +7,9 @@ import com.project.devgram.exception.errorcode.TagErrorCode;
 import com.project.devgram.repository.TagRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,5 +42,20 @@ public class TagService {
         );
 
         return "태그 삭제 완료";
+    }
+
+    /*
+     * 태그 자동 완성
+     */
+    public List<TagDto> autoCompleteTag(String name) {
+        Pageable limit = PageRequest.of(0, 5);
+
+        Page<Tag> tagList = tagRepository.findByNameContainsIgnoreCase(name, limit);
+
+        if (tagList.isEmpty()) {
+            throw new DevGramException(TagErrorCode.NOT_CORRESPOND_TAG);
+        }
+
+        return TagDto.fromList(tagList);
     }
 }
