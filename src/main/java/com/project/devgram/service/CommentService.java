@@ -147,9 +147,4 @@ public class CommentService {
 
         return CommentDto.from(comment);
     }
-
-    // 생성 날짜 내림차순 정렬
-//    public Sort sortByCreatedAtDesc() {
-//        return Sort.by(Direction.DESC, "createdAt");
-//    }
 }
