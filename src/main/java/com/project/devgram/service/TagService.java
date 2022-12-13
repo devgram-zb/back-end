@@ -6,6 +6,7 @@ import com.project.devgram.exception.DevGramException;
 import com.project.devgram.exception.errorcode.TagErrorCode;
 import com.project.devgram.repository.TagRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,34 @@ import org.springframework.stereotype.Service;
 public class TagService {
 
     private final TagRepository tagRepository;
+
+    /*
+     * 태그 등록
+     */
+    public void addTag(List<String> tagNames) {
+
+        if (tagNames.isEmpty()) {
+            return;
+        }
+
+        for (String tagName: tagNames) {
+            Optional<Tag> optionalTag = tagRepository.findByNameIgnoreCase(tagName);
+
+            if (optionalTag.isEmpty()) {
+                Tag tag = Tag.builder()
+                    .name(tagName)
+                    .useCount(1L)
+                    .build();
+
+                tagRepository.save(tag);
+            } else {
+                Tag tag = optionalTag.get();
+                tag.setUseCount(tag.getUseCount() + 1L);
+
+                tagRepository.save(tag);
+            }
+        }
+    }
 
     /*
      * 태그 전체 목록 조회
