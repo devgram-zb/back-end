@@ -4,9 +4,15 @@ import com.project.devgram.entity.Tag;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 
+@Getter
+@Builder
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class TagDto {
     private Long tagSeq;
 

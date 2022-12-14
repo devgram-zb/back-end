@@ -28,7 +28,7 @@ public class TagService {
             return;
         }
 
-        for (String tagName: tagNames) {
+        for (String tagName : tagNames) {
             Optional<Tag> optionalTag = tagRepository.findByNameIgnoreCase(tagName);
 
             if (optionalTag.isEmpty()) {
@@ -76,10 +76,10 @@ public class TagService {
     /*
      * 태그 자동 완성
      */
-    public List<TagDto> autoCompleteTag(String name) {
+    public List<TagDto> autoCompleteTag(String searchTag) {
         Pageable limit = PageRequest.of(0, 5);
 
-        Page<Tag> tagList = tagRepository.findByNameContainsIgnoreCase(name, limit);
+        Page<Tag> tagList = tagRepository.searchByFti(searchTag, limit);
 
         if (tagList.isEmpty()) {
             throw new DevGramException(TagErrorCode.NOT_CORRESPOND_TAG);

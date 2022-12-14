@@ -37,7 +37,7 @@ public class TagController {
      * 태그 자동 완성
      */
     @GetMapping("/autocomplete")
-    public List<TagDto> autocompleteTag(@RequestParam String name) {
-        return tagService.autoCompleteTag(name);
+    public List<TagDto> autocompleteTag(@RequestParam("searchTag") String searchTag) {
+        return tagService.autoCompleteTag(searchTag);
     }
 }
