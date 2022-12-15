@@ -28,15 +28,14 @@ public class BoardController {
     private final TagService tagService;
 
     @PostMapping
-    public RegisterBoard.Response registerBoard(@RequestBody @Valid RegisterBoard.Request request,
-        @RequestParam List<String> tagNames) {
+    public RegisterBoard.Response registerBoard(@RequestBody @Valid RegisterBoard.Request request) {
 
-        tagService.addTag(tagNames);
+        tagService.addTag(request.getTagNames());
 
         return RegisterBoard
             .Response
             .from(boardService
-                .registerBoard(request.getTitle(), request.getContent()));
+                .registerBoard(request.getTitle(), request.getContent()), request.getTagNames());
     }
 
     @GetMapping

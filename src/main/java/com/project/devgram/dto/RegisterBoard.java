@@ -1,6 +1,7 @@
 package com.project.devgram.dto;
 
 import com.project.devgram.type.status.Status;
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class RegisterBoard {
 		@NotBlank
 		private String title;
 		private String content;
+		private List<String> tagNames;
 	}
 
 
@@ -33,13 +35,15 @@ public class RegisterBoard {
 		private String title;
 		private String content;
 		private Integer likeCount;
+		private List<String> tagNames;
 
-		public static Response from(BoardDto boardDto) {
+		public static Response from(BoardDto boardDto, List<String> tagNames) {
 			return Response.builder()
 				.status(boardDto.getStatus())
 				.title(boardDto.getTitle())
 				.content(boardDto.getContent())
 				.likeCount(boardDto.getLikeCount())
+				.tagNames(tagNames)
 				.build();
 		}
 	}
