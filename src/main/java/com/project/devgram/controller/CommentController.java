@@ -2,6 +2,7 @@ package com.project.devgram.controller;
 
 import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
+import com.project.devgram.dto.CommentResponse.GroupComment;
 import com.project.devgram.service.CommentService;
 import com.project.devgram.type.CommentStatus;
 import java.util.List;
@@ -34,7 +35,7 @@ public class CommentController {
      * 댓글 조회(보드)
      */
     @GetMapping
-    public List<CommentDto> getCommentList(@RequestParam Long boardSeq) {
+    public List<GroupComment> getCommentList(@RequestParam Long boardSeq) {
         return commentService.getCommentList(boardSeq);
     }
 

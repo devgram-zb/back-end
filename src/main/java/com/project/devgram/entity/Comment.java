@@ -22,15 +22,18 @@ import lombok.Setter;
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentSeq;
+    private Long commentSeq; // 댓글 번호
 
-    private String content;
-    private Long parentCommentSeq;
-    private Long boardSeq;
+    private String content; // 댓글 내용
+    private boolean groupComment; // 그룹 댓글 여부
+    private Long commentGroup; // 댓글 그룹
+    private Long parentCommentSeq; // 부모 댓글 번호
+    private String parentCommentCreatedBy; // 부모 댓글 작성자
+    private Long boardSeq; // 게시글 번호
 
-    private String createdBy;
-    private String updatedBy;
+    private String createdBy; // 작성자
+    private String updatedBy; // 수정자
 
     @Enumerated(EnumType.STRING)
-    private CommentStatus commentStatus;
+    private CommentStatus commentStatus; // 댓글 상태
 }
