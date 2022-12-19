@@ -40,4 +40,12 @@ public class TagController {
     public List<TagDto> autocompleteTag(@RequestParam("searchTag") String searchTag) {
         return tagService.autoCompleteTag(searchTag);
     }
+
+    /*
+     * 인기 태그 조회(8개, 태그 사용 순)
+     */
+    @GetMapping("/popular")
+    public List<TagDto> getPopularTagList() {
+        return tagService.getPopularTagList();
+    }
 }

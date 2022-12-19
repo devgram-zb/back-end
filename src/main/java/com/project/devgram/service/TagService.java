@@ -87,4 +87,18 @@ public class TagService {
 
         return TagDto.fromList(tagList);
     }
+
+    /*
+     * 인기 태그 조회(8개, 태그 사용 순)
+     */
+    public List<TagDto> getPopularTagList() {
+
+        List<Tag> tagList = tagRepository.findTop8ByOrderByUseCountDesc();
+
+        if (tagList.isEmpty()) {
+            throw new DevGramException(TagErrorCode.NOT_EXISTENT_TAG);
+        }
+
+        return TagDto.fromList(tagList);
+    }
 }
