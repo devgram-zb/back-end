@@ -3,9 +3,12 @@ package com.project.devgram.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+
 import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
+import com.project.devgram.dto.CommentResponse.GroupComment;
 import com.project.devgram.entity.Comment;
 import com.project.devgram.entity.CommentAccuse;
 import com.project.devgram.exception.DevGramException;
@@ -36,74 +39,137 @@ class CommentServiceTest {
     @Mock
     private CommentAccuseRepository commentAccuseRepository;
 
-    @DisplayName("댓글 등록 - 성공")
+    @DisplayName("그룹 댓글 등록 - 성공")
     @Test
-    void addComment_success() {
+    void addGroupComment_success() {
         // given
-        CommentDto commentDto = CommentDto.builder()
+        CommentDto groupCommentDto = CommentDto.builder()
             .content("test")
-            .parentCommentSeq(1L)
             .boardSeq(1L)
-            .createdBy("writer")
+            .createdBy("group")
             .build();
 
-        Comment comment = Comment.builder()
+        Comment groupComment = Comment.builder()
             .commentSeq(1L)
-            .content(commentDto.getContent())
-            .parentCommentSeq(commentDto.getParentCommentSeq())
-            .boardSeq(commentDto.getBoardSeq())
-            .createdBy(commentDto.getCreatedBy())
+            .content(groupCommentDto.getContent())
+            .parentCommentSeq(groupCommentDto.getParentCommentSeq())
+            .commentGroup(1L)
+            .boardSeq(groupCommentDto.getBoardSeq())
+            .createdBy(groupCommentDto.getCreatedBy())
             .commentStatus(CommentStatus.POST)
             .build();
 
-        System.out.println(comment.getCommentSeq());
+        CommentDto childCommentDto = CommentDto.builder()
+            .content("test")
+            .boardSeq(1L)
+            .parentCommentSeq(1L)
+            .commentGroup(1L)
+            .createdBy("child")
+            .build();
 
-        given(commentRepository.save(any())).willReturn(comment);
+        Comment childComment = Comment.builder()
+            .commentSeq(2L)
+            .boardSeq(1L)
+            .parentCommentSeq(1L)
+            .commentGroup(1L)
+            .createdBy(childCommentDto.getCreatedBy())
+            .build();
+
+        given(commentRepository.save(any())).willReturn(groupComment);
 
         // when
-        CommentDto result = commentService.addComment(commentDto);
+        CommentDto result = commentService.addComment(groupCommentDto);
 
         // then
-        assertEquals(result.getCommentSeq(), comment.getCommentSeq());
-        assertEquals(result.getContent(), comment.getContent());
-        assertEquals(result.getParentCommentSeq(), comment.getParentCommentSeq());
-        assertEquals(result.getCreatedAt(), comment.getCreatedAt());
-        assertEquals(result.getCreatedBy(), comment.getCreatedBy());
+        assertEquals(result.getCommentSeq(), groupComment.getCommentSeq());
+        assertEquals(result.getParentCommentSeq(), null);
+        assertEquals(result.getCommentGroup(), groupComment.getCommentGroup());
+    }
+
+    @DisplayName("자식 댓글 등록 - 성공")
+    @Test
+    void addChildComment_success() {
+        // given
+        CommentDto childCommentDto = CommentDto.builder()
+            .content("test")
+            .boardSeq(1L)
+            .parentCommentSeq(1L)
+            .commentGroup(1L)
+            .createdBy("child")
+            .build();
+
+        Comment childComment = Comment.builder()
+            .commentSeq(2L)
+            .boardSeq(childCommentDto.getBoardSeq())
+            .parentCommentSeq(childCommentDto.getParentCommentSeq())
+            .commentGroup(childCommentDto.getCommentGroup())
+            .createdBy(childCommentDto.getCreatedBy())
+            .build();
+
+        given(commentRepository.save(any())).willReturn(childComment);
+        given(commentRepository.findByCommentSeq(anyLong())).willReturn(Optional.of(Comment
+            .builder()
+            .createdBy("group")
+            .build()));
+        // when
+        CommentDto result = commentService.addComment(childCommentDto);
+
+        // then
+        assertEquals(result.getCommentSeq(), childComment.getCommentSeq());
+        assertEquals(result.getParentCommentSeq(), childComment.getParentCommentSeq());
+        assertEquals(result.getCommentGroup(), childComment.getCommentGroup());
     }
 
     @DisplayName("댓글 조회 - 성공")
     @Test
     void getCommentList_success() {
         // given
-        List<Comment> commentList = new ArrayList<>();
+        List<Comment> groupCommentList = new ArrayList<>();
+        List<Comment> childCommentList = new ArrayList<>();
 
         for (long i = 0; i < 11; i++) {
-            commentList.add(Comment.builder()
+            groupCommentList.add(Comment.builder()
                 .commentSeq(i)
+                .commentGroup(i)
                 .boardSeq(1L)
                 .content(i + "content")
                 .commentStatus(CommentStatus.POST)
                 .build());
         }
 
-        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L,
-            CommentStatus.DELETE)).willReturn(commentList);
+        for (long i = 0; i < 11; i++) {
+            childCommentList.add(
+                Comment.builder()
+                    .commentSeq(i + 10L)
+                    .commentGroup(1L)
+                    .content(i + 10L + "content")
+                    .commentStatus(CommentStatus.POST)
+                    .build());
+        }
+
+        given(commentRepository.findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(1L,
+            CommentStatus.DELETE)).willReturn(groupCommentList);
+
+        given(commentRepository.findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNotNull(1L,
+            CommentStatus.DELETE)).willReturn(childCommentList);
 
         // when
-        List<CommentDto> commentDtoList = commentService.getCommentList(1L);
+        List<GroupComment> result = commentService.getCommentList(1L);
 
         // then
-        assertEquals(commentDtoList.size(), 11);
+        assertEquals(result.size(), 11);
+        assertEquals(result.get(1).getChildCommentList().size(), 11);
+        assertEquals(result.get(2).getChildCommentList().size(), 0);
     }
 
     @DisplayName("댓글 조회 - 실패 - 해당 게시글에 댓글 존재하지 않음")
     @Test
     void getCommentList_fail() {
         // given
-        List<Comment> commentList = new ArrayList<>();
+        List<Comment> groupCommentList = new ArrayList<>();
 
-        given(commentRepository.findByBoardSeqAndCommentStatusNot(1L,
-            CommentStatus.DELETE)).willReturn(commentList);
+        given(commentRepository.findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(1L,
+            CommentStatus.DELETE)).willReturn(groupCommentList);
 
         // when
         DevGramException devGramException = assertThrows(DevGramException.class,

@@ -30,8 +30,6 @@ public class CommentDto {
     private String createdBy;
     private CommentStatus commentStatus;
 
-    private List<CommentDto> childCommentList;
-
     public static CommentDto from(Comment comment) {
         return CommentDto.builder()
             .commentSeq(comment.getCommentSeq())

@@ -58,8 +58,12 @@ public class CommentService {
                 .commentStatus(CommentStatus.POST)
                 .build();
 
-            comment.setParentCommentCreatedBy(commentRepository.findByCommentSeq(
-                comment.getParentCommentSeq()).get().getCreatedBy());
+            String parentCommentCreatedBy = commentRepository.findByCommentSeq(
+                    comment.getParentCommentSeq())
+                .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT))
+                .getCreatedBy();
+
+            comment.setParentCommentCreatedBy(parentCommentCreatedBy);
 
             return CommentDto.from(commentRepository.save(comment));
         }
