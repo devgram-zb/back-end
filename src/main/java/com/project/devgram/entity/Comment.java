@@ -25,7 +25,6 @@ public class Comment extends BaseEntity {
     private Long commentSeq; // 댓글 번호
 
     private String content; // 댓글 내용
-    private boolean groupComment; // 그룹 댓글 여부
     private Long commentGroup; // 댓글 그룹
     private Long parentCommentSeq; // 부모 댓글 번호
     private String parentCommentCreatedBy; // 부모 댓글 작성자

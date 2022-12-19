@@ -43,7 +43,6 @@ public class CommentService {
                 .build();
 
             comment = commentRepository.save(comment);
-            comment.setGroupComment(true);
             comment.setCommentGroup(comment.getCommentSeq());
 
             return CommentDto.from(commentRepository.save(comment));
