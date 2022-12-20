@@ -74,9 +74,17 @@ public class CommentController {
     /*
      * 댓글 상태 업데이트(관리자)
      */
-    @PutMapping
+    @PutMapping("/status")
     public CommentDto updateCommentStatus(@RequestParam Long commentSeq, @RequestParam
         CommentStatus commentStatus) {
         return commentService.updateCommentStatus(commentSeq, commentStatus);
+    }
+
+    /*
+     * 댓글 내용 업데이트(작성자)
+     */
+    @PutMapping("/content")
+    public CommentDto updateCommentContent(@RequestBody CommentDto commentDto) {
+        return commentService.updateCommentContent(commentDto);
     }
 }

@@ -503,4 +503,31 @@ class CommentServiceTest {
         assertEquals(devGramException1.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT);
         assertEquals(devGramException2.getErrorCode(), CommentErrorCode.NOT_EXISTENT_COMMENT);
     }
+
+    @DisplayName("댓글 내용 업데이트 - 성공")
+    @Test
+    void updateCommentContent_success() {
+        // given
+        CommentDto commentDto = CommentDto.builder()
+            .commentSeq(1L)
+            .content("content mod")
+            .commentStatus(CommentStatus.POST)
+            .build();
+
+        Comment comment = Comment.builder()
+            .commentSeq(1L)
+            .content("content")
+            .commentStatus(CommentStatus.POST)
+            .build();
+
+        given(commentRepository.findByCommentSeq(commentDto.getCommentSeq())).willReturn(Optional.of(comment));
+
+        given(commentRepository.save(comment)).willReturn(comment);
+
+        // when
+        CommentDto result = commentService.updateCommentContent(commentDto);
+
+        // then
+        assertEquals(result.getContent(), commentDto.getContent());
+    }
 }

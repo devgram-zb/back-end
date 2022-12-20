@@ -149,9 +149,10 @@ public class CommentService {
 
         // 그룹 댓글이 삭제되는 경우 -> 그룹에 속한 댓글 모두 삭제
         if (Objects.equals(comment.getCommentSeq(), comment.getCommentGroup())) {
-            List<Comment> targetList = commentRepository.findByCommentGroup(comment.getCommentGroup());
+            List<Comment> targetList = commentRepository.findByCommentGroup(
+                comment.getCommentGroup());
 
-            for (Comment target: targetList) {
+            for (Comment target : targetList) {
                 target.setCommentStatus(CommentStatus.DELETE);
                 commentRepository.save(target);
             }
@@ -160,7 +161,8 @@ public class CommentService {
         }
 
         // 부모 댓글이 삭제되는 경우 -> 해당 댓글과 자식 댓글 삭제
-        List<Comment> targetList = commentRepository.findByParentCommentSeq(comment.getCommentSeq());
+        List<Comment> targetList = commentRepository.findByParentCommentSeq(
+            comment.getCommentSeq());
 
         if (!targetList.isEmpty()) {
             // 부모 댓글 삭제
@@ -168,14 +170,14 @@ public class CommentService {
             commentRepository.save(comment);
 
             // 자식 댓글 삭제
-            for (Comment target: targetList) {
+            for (Comment target : targetList) {
                 target.setCommentStatus(CommentStatus.DELETE);
                 commentRepository.save(target);
             }
 
             return "부모 댓글과 자식 댓글이 삭제되었습니다.";
 
-        // 자식 댓글이 삭제되는 경우 -> 해당 댓글만 삭제
+            // 자식 댓글이 삭제되는 경우 -> 해당 댓글만 삭제
         } else {
             comment.setCommentStatus(CommentStatus.DELETE);
             commentRepository.save(comment);
@@ -230,5 +232,17 @@ public class CommentService {
         commentRepository.save(comment);
 
         return CommentDto.from(comment);
+    }
+
+    /*
+     * 댓글 내용 수정(작성자)
+     */
+    public CommentDto updateCommentContent(CommentDto commentDto) {
+        Comment comment = commentRepository.findByCommentSeq(commentDto.getCommentSeq())
+            .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
+
+        comment.setContent(commentDto.getContent());
+
+        return CommentDto.from(commentRepository.save(comment));
     }
 }
