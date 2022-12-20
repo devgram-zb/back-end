@@ -51,7 +51,7 @@ public class CommentController {
      * 댓글 삭제
      */
     @DeleteMapping
-    public CommentDto deleteComment(@RequestParam Long commentSeq) {
+    public String deleteComment(@RequestParam Long commentSeq) {
         return commentService.deleteComment(commentSeq);
     }
 

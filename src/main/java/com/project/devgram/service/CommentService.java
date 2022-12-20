@@ -14,6 +14,7 @@ import com.project.devgram.type.CommentStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -138,7 +139,7 @@ public class CommentService {
     /*
      * 댓글 삭제
      */
-    public CommentDto deleteComment(Long commentSeq) {
+    public String deleteComment(Long commentSeq) {
         Comment comment = commentRepository.findByCommentSeq(commentSeq)
             .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
 
@@ -146,9 +147,41 @@ public class CommentService {
             throw new DevGramException(CommentErrorCode.ALREADY_DELETED_COMMENT);
         }
 
-        comment.setCommentStatus(CommentStatus.DELETE);
+        // 그룹 댓글이 삭제되는 경우 -> 그룹에 속한 댓글 모두 삭제
+        if (Objects.equals(comment.getCommentSeq(), comment.getCommentGroup())) {
+            List<Comment> targetList = commentRepository.findByCommentGroup(comment.getCommentGroup());
 
-        return CommentDto.from(commentRepository.save(comment));
+            for (Comment target: targetList) {
+                target.setCommentStatus(CommentStatus.DELETE);
+                commentRepository.save(target);
+            }
+
+            return "해당 commentGroup에 속한 댓글들이 삭제 되었습니다.";
+        }
+
+        // 부모 댓글이 삭제되는 경우 -> 해당 댓글과 자식 댓글 삭제
+        List<Comment> targetList = commentRepository.findByParentCommentSeq(comment.getCommentSeq());
+
+        if (!targetList.isEmpty()) {
+            // 부모 댓글 삭제
+            comment.setCommentStatus(CommentStatus.DELETE);
+            commentRepository.save(comment);
+
+            // 자식 댓글 삭제
+            for (Comment target: targetList) {
+                target.setCommentStatus(CommentStatus.DELETE);
+                commentRepository.save(target);
+            }
+
+            return "부모 댓글과 자식 댓글이 삭제되었습니다.";
+
+        // 자식 댓글이 삭제되는 경우 -> 해당 댓글만 삭제
+        } else {
+            comment.setCommentStatus(CommentStatus.DELETE);
+            commentRepository.save(comment);
+
+            return "자식 댓글이 삭제되었습니다.";
+        }
     }
 
     /*

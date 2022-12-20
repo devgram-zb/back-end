@@ -9,7 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Optional<Comment> findByCommentSeq(Long commentSeq);
 
-    // 특정 보드의 부모 댓글 리스트
+    List<Comment> findByCommentGroup(Long commentGroup);
+
+    List<Comment> findByParentCommentSeq(Long parentCommentSeq);
+
+    // 특정 보드의 그룹 댓글 리스트
     List<Comment> findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(Long boardSeq, CommentStatus commentStatus);
 
     // 특정 보드의 자식 댓글 리스트

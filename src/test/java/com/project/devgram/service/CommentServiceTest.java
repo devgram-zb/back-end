@@ -229,25 +229,92 @@ class CommentServiceTest {
             CommentErrorCode.NOT_EXISTENT_ACCUSED_COMMENT);
     }
 
-    @DisplayName("댓글 삭제 - 성공")
+    @DisplayName("그룹 댓글 삭제 - 성공")
     @Test
-    void deleteComment_success() {
+    void deleteGroupComment_success() {
         // given
-        Comment comment = Comment.builder()
+        Comment groupComment = Comment.builder()
             .commentSeq(1L)
-            .commentStatus(CommentStatus.ACCUSE)
+            .commentGroup(1L)
+            .commentStatus(CommentStatus.POST)
             .build();
 
-        given(commentRepository.findByCommentSeq(1L)).willReturn(
-            Optional.of(comment));
+        List<Comment> targetList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            targetList.add(Comment.builder().commentGroup(groupComment.getCommentGroup()).build());
+        }
 
-        given(commentRepository.save(comment)).willReturn(comment);
+        given(commentRepository.findByCommentSeq(groupComment.getCommentSeq())).willReturn(
+            Optional.of(groupComment));
+
+        given(commentRepository.findByCommentGroup(groupComment.getCommentGroup())).willReturn(
+            targetList);
+
+        given(commentRepository.save(any())).willReturn(any());
 
         // when
-        CommentDto result = commentService.deleteComment(1L);
+        String result = commentService.deleteComment(groupComment.getCommentSeq());
 
         // then
-        assertEquals(result.getCommentStatus(), CommentStatus.DELETE);
+        assertEquals(result, "해당 commentGroup에 속한 댓글들이 삭제 되었습니다.");
+    }
+
+    @DisplayName("부모 댓글 삭제 - 성공")
+    @Test
+    void deleteParentComment_success() {
+        // given
+        Comment parentComment = Comment.builder()
+            .commentSeq(1L)
+            .commentGroup(2L)
+            .commentStatus(CommentStatus.POST)
+            .build();
+
+        List<Comment> targetList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            targetList.add(Comment.builder().commentGroup(parentComment.getCommentGroup())
+                .parentCommentSeq(parentComment.getCommentSeq()).build());
+        }
+
+        given(commentRepository.findByCommentSeq(parentComment.getCommentSeq())).willReturn(
+            Optional.of(parentComment));
+
+        given(commentRepository.findByParentCommentSeq(parentComment.getCommentSeq())).willReturn(
+            targetList);
+
+        given(commentRepository.save(any())).willReturn(any());
+
+        // when
+        String result = commentService.deleteComment(parentComment.getCommentSeq());
+
+        // then
+        assertEquals(result, "부모 댓글과 자식 댓글이 삭제되었습니다.");
+    }
+
+    @DisplayName("자식 댓글 삭제 - 성공")
+    @Test
+    void deleteChildComment_success() {
+        // given
+        Comment parentComment = Comment.builder()
+            .commentSeq(1L)
+            .commentGroup(2L)
+            .commentStatus(CommentStatus.POST)
+            .build();
+
+        List<Comment> targetList = new ArrayList<>();
+
+        given(commentRepository.findByCommentSeq(parentComment.getCommentSeq())).willReturn(
+            Optional.of(parentComment));
+
+        given(commentRepository.findByParentCommentSeq(parentComment.getCommentSeq())).willReturn(
+            targetList);
+
+        given(commentRepository.save(any())).willReturn(any());
+
+        // when
+        String result = commentService.deleteComment(parentComment.getCommentSeq());
+
+        // then
+        assertEquals(result, "자식 댓글이 삭제되었습니다.");
     }
 
     @DisplayName("댓글 삭제 - 실패 - 존재하지 않는 댓글")
