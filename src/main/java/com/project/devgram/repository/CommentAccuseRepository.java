@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentAccuseRepository extends JpaRepository<CommentAccuse, Long> {
-    List<CommentAccuse> findByCommentSeq(Long commentSeq, Sort sort);
+    List<CommentAccuse> findByComment_CommentSeq(Long commentSeq, Sort sort);
 
-    Optional<CommentAccuse> findTop1ByCommentSeq(Long commentSeq, Sort sort);
+    Optional<CommentAccuse> findTop1ByComment_CommentSeq(Long commentSeq, Sort sort);
 }

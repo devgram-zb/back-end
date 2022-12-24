@@ -16,10 +16,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByParentCommentSeq(Long parentCommentSeq);
 
     // 특정 보드의 그룹 댓글 리스트
-    Page<Comment> findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(Long boardSeq, CommentStatus commentStatus, Pageable pageable);
+    Page<Comment> findByBoard_BoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(Long boardSeq, CommentStatus commentStatus, Pageable pageable);
 
     // 특정 보드의 자식 댓글 리스트
-    List<Comment> findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNotNullAndCommentGroupBetween(Long boardSeq, CommentStatus commentStatus, Long startPS, Long endPS);
+    List<Comment> findByBoard_BoardSeqAndCommentStatusNotAndParentCommentSeqIsNotNullAndCommentGroupBetween(Long boardSeq, CommentStatus commentStatus, Long startPS, Long endPS);
 
     List<Comment> findByCommentStatus(CommentStatus commentStatus);
 }

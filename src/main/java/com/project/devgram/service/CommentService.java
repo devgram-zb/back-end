@@ -4,10 +4,13 @@ import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.dto.CommentResponse.IncludedComment;
 import com.project.devgram.dto.CommentResponse.GroupComment;
+import com.project.devgram.entity.Board;
 import com.project.devgram.entity.Comment;
 import com.project.devgram.entity.CommentAccuse;
 import com.project.devgram.exception.DevGramException;
+import com.project.devgram.exception.errorcode.BoardErrorCode;
 import com.project.devgram.exception.errorcode.CommentErrorCode;
+import com.project.devgram.repository.BoardRepository;
 import com.project.devgram.repository.CommentAccuseRepository;
 import com.project.devgram.repository.CommentRepository;
 import com.project.devgram.type.CommentStatus;
@@ -29,6 +32,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentAccuseRepository commentAccuseRepository;
+    private final BoardRepository boardRepository;
     public static final Sort sortByCreatedAtDesc = Sort.by(Direction.DESC, "createdAt");
 
     /*
@@ -36,11 +40,14 @@ public class CommentService {
      */
     public CommentDto addComment(CommentDto commentDto) {
 
+        Board board = boardRepository.findById(commentDto.getBoardSeq())
+            .orElseThrow(() -> new DevGramException(BoardErrorCode.CANNOT_FIND_BOARD_BY_BOARDSEQ));
+
         // 대댓글이 아닌 경우
         if (commentDto.getParentCommentSeq() == null) {
             Comment comment = Comment.builder()
                 .content(commentDto.getContent())
-                .boardSeq(commentDto.getBoardSeq())
+                .board(board)
                 .createdBy(commentDto.getCreatedBy())
                 .commentStatus(CommentStatus.POST)
                 .build();
@@ -56,7 +63,7 @@ public class CommentService {
                 .content(commentDto.getContent())
                 .parentCommentSeq(commentDto.getParentCommentSeq())
                 .commentGroup(commentDto.getCommentGroup())
-                .boardSeq(commentDto.getBoardSeq())
+                .board(board)
                 .createdBy(commentDto.getCreatedBy())
                 .commentStatus(CommentStatus.POST)
                 .build();
@@ -80,7 +87,7 @@ public class CommentService {
         // 부모 댓글 리스트
         Page<Comment> groupCommentList =
             commentRepository
-                .findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(
+                .findByBoard_BoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(
                     boardSeq,
                     CommentStatus.DELETE, pageRequest.of());
 
@@ -97,11 +104,12 @@ public class CommentService {
         // 자식 댓글 리스트
         List<Comment> childCommentList =
             commentRepository
-                .findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNotNullAndCommentGroupBetween(
+                .findByBoard_BoardSeqAndCommentStatusNotAndParentCommentSeqIsNotNullAndCommentGroupBetween(
                     boardSeq,
                     CommentStatus.DELETE,
                     groupCommentResponseList.get(0).getCommentGroup(),
-                    groupCommentResponseList.get(groupCommentResponseList.size() - 1).getCommentGroup());
+                    groupCommentResponseList.get(groupCommentResponseList.size() - 1)
+                        .getCommentGroup());
 
         ArrayList<IncludedComment> includedCommentResponseList = new ArrayList<>();
 
@@ -135,7 +143,7 @@ public class CommentService {
         ArrayList<CommentDto> commentDtoList = new ArrayList<>();
 
         for (Comment comment : commentList) {
-            LocalDateTime latestAccusedAt = commentAccuseRepository.findTop1ByCommentSeq(
+            LocalDateTime latestAccusedAt = commentAccuseRepository.findTop1ByComment_CommentSeq(
                     comment.getCommentSeq(), sortByCreatedAtDesc).orElseThrow(
                     () -> new DevGramException(CommentErrorCode.NOT_EXISTENT_ACCUSE_HISTORY))
                 .getCreatedAt();
@@ -204,11 +212,11 @@ public class CommentService {
 
         if (comment.getCommentStatus().equals(CommentStatus.POST)) {
             comment.setCommentStatus(CommentStatus.ACCUSE);
-            commentRepository.save(comment);
+            comment = commentRepository.save(comment);
         }
 
         CommentAccuse commentAccuse = CommentAccuse.builder()
-            .commentSeq(commentAccuseDto.getCommentSeq())
+            .comment(comment)
             .accuseReason(commentAccuseDto.getAccuseReason())
             .build();
 
@@ -219,7 +227,7 @@ public class CommentService {
      * 특정 신고 댓글 신고 내역 조회
      */
     public List<CommentAccuseDto> getAccusedCommentDetail(Long commentSeq) {
-        List<CommentAccuse> commentAccuseList = commentAccuseRepository.findByCommentSeq(
+        List<CommentAccuse> commentAccuseList = commentAccuseRepository.findByComment_CommentSeq(
             commentSeq, sortByCreatedAtDesc);
 
         if (commentAccuseList.isEmpty()) {
