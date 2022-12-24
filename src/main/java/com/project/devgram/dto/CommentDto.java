@@ -38,7 +38,7 @@ public class CommentDto {
             .commentGroup(comment.getCommentGroup())
             .boardSeq(comment.getBoard().getBoardSeq())
             .createdAt(comment.getCreatedAt())
-            .createdBy(comment.getCreatedBy())
+            .createdBy(comment.getCreatedBy().getUsername())
             .commentStatus(comment.getCommentStatus())
             .build();
     }
@@ -52,7 +52,7 @@ public class CommentDto {
             .commentGroup(comment.getCommentGroup())
             .boardSeq(comment.getBoard().getBoardSeq())
             .createdAt(comment.getCreatedAt())
-            .createdBy(comment.getCreatedBy())
+            .createdBy(comment.getCreatedBy().getUsername())
             .commentStatus(comment.getCommentStatus())
             .build();
     }

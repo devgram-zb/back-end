@@ -54,26 +54,11 @@ class CommentServiceTest {
             .content(groupCommentDto.getContent())
             .parentCommentSeq(groupCommentDto.getParentCommentSeq())
             .commentGroup(1L)
-            .boardSeq(groupCommentDto.getBoardSeq())
+            .board(groupCommentDto.getBoardSeq())
             .createdBy(groupCommentDto.getCreatedBy())
             .commentStatus(CommentStatus.POST)
             .build();
 
-        CommentDto childCommentDto = CommentDto.builder()
-            .content("test")
-            .boardSeq(1L)
-            .parentCommentSeq(1L)
-            .commentGroup(1L)
-            .createdBy("child")
-            .build();
-
-        Comment childComment = Comment.builder()
-            .commentSeq(2L)
-            .boardSeq(1L)
-            .parentCommentSeq(1L)
-            .commentGroup(1L)
-            .createdBy(childCommentDto.getCreatedBy())
-            .build();
 
         given(commentRepository.save(any())).willReturn(groupComment);
 

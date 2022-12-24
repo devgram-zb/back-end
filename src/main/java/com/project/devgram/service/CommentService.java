@@ -7,12 +7,15 @@ import com.project.devgram.dto.CommentResponse.GroupComment;
 import com.project.devgram.entity.Board;
 import com.project.devgram.entity.Comment;
 import com.project.devgram.entity.CommentAccuse;
+import com.project.devgram.entity.Users;
 import com.project.devgram.exception.DevGramException;
 import com.project.devgram.exception.errorcode.BoardErrorCode;
 import com.project.devgram.exception.errorcode.CommentErrorCode;
+import com.project.devgram.exception.errorcode.UserErrorCode;
 import com.project.devgram.repository.BoardRepository;
 import com.project.devgram.repository.CommentAccuseRepository;
 import com.project.devgram.repository.CommentRepository;
+import com.project.devgram.repository.UserRepository;
 import com.project.devgram.type.CommentStatus;
 import com.project.devgram.util.pagerequest.PageRequest;
 import java.time.LocalDateTime;
@@ -33,6 +36,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentAccuseRepository commentAccuseRepository;
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
     public static final Sort sortByCreatedAtDesc = Sort.by(Direction.DESC, "createdAt");
 
     /*
@@ -45,10 +49,12 @@ public class CommentService {
 
         // 대댓글이 아닌 경우
         if (commentDto.getParentCommentSeq() == null) {
+            Users users = userRepository.findByUsername(commentDto.getCreatedBy()).orElseThrow(() -> new DevGramException(UserErrorCode.USER_NOT_EXIST));
+
             Comment comment = Comment.builder()
                 .content(commentDto.getContent())
                 .board(board)
-                .createdBy(commentDto.getCreatedBy())
+                .createdBy(users)
                 .commentStatus(CommentStatus.POST)
                 .build();
 
@@ -59,19 +65,21 @@ public class CommentService {
 
             // 대댓글인 경우
         } else {
+            Users users = userRepository.findByUsername(commentDto.getCreatedBy()).orElseThrow(() -> new DevGramException(UserErrorCode.USER_NOT_EXIST));
+
             Comment comment = Comment.builder()
                 .content(commentDto.getContent())
                 .parentCommentSeq(commentDto.getParentCommentSeq())
                 .commentGroup(commentDto.getCommentGroup())
                 .board(board)
-                .createdBy(commentDto.getCreatedBy())
+                .createdBy(users)
                 .commentStatus(CommentStatus.POST)
                 .build();
 
             String parentCommentCreatedBy = commentRepository.findByCommentSeq(
                     comment.getParentCommentSeq())
                 .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT))
-                .getCreatedBy();
+                .getCreatedBy().getUsername();
 
             comment.setParentCommentCreatedBy(parentCommentCreatedBy);
 
@@ -215,8 +223,12 @@ public class CommentService {
             comment = commentRepository.save(comment);
         }
 
+        Users users = userRepository.findByUsername(commentAccuseDto.getCreatedBy()).orElseThrow(() -> new DevGramException(
+            UserErrorCode.USER_NOT_EXIST));
+
         CommentAccuse commentAccuse = CommentAccuse.builder()
             .comment(comment)
+            .createdBy(users)
             .accuseReason(commentAccuseDto.getAccuseReason())
             .build();
 

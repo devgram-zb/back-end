@@ -1,6 +1,5 @@
 package com.project.devgram.dto;
 
-import com.project.devgram.entity.Comment;
 import com.project.devgram.entity.CommentAccuse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class CommentAccuseDto {
         return CommentAccuseDto.builder()
             .commentAccuseSeq(commentAccuse.getCommentAccuseSeq())
             .commentSeq(commentAccuse.getComment().getCommentSeq())
-            .createdBy(commentAccuse.getCreatedBy())
+            .createdBy(commentAccuse.getCreatedBy().getUsername())
             .createdAt(commentAccuse.getCreatedAt())
             .accuseReason(commentAccuse.getAccuseReason())
             .build();

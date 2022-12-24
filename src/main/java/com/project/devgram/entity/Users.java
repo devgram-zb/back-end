@@ -1,6 +1,7 @@
 package com.project.devgram.entity;
 
 import com.project.devgram.type.ROLE;
+import java.io.Serializable;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
