@@ -1,5 +1,6 @@
 package com.project.devgram.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +22,7 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tagSeq;
 
+    @Column(unique = true)
     private String name;
 
     private Long useCount;
