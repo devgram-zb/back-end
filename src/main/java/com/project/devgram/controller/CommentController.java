@@ -5,6 +5,7 @@ import com.project.devgram.dto.CommentDto;
 import com.project.devgram.dto.CommentResponse.GroupComment;
 import com.project.devgram.service.CommentService;
 import com.project.devgram.type.CommentStatus;
+import com.project.devgram.util.pagerequest.CommentPageRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,8 +36,8 @@ public class CommentController {
      * 댓글 조회(보드)
      */
     @GetMapping
-    public List<GroupComment> getCommentList(@RequestParam Long boardSeq) {
-        return commentService.getCommentList(boardSeq);
+    public List<GroupComment> getCommentList(@RequestParam Long boardSeq, CommentPageRequest commentPageRequest) {
+        return commentService.getCommentList(boardSeq, commentPageRequest);
     }
 
     /*

@@ -11,12 +11,14 @@ import com.project.devgram.exception.errorcode.CommentErrorCode;
 import com.project.devgram.repository.CommentAccuseRepository;
 import com.project.devgram.repository.CommentRepository;
 import com.project.devgram.type.CommentStatus;
+import com.project.devgram.util.pagerequest.PageRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -73,12 +75,14 @@ public class CommentService {
     /*
      * 댓글 조회(보드)
      */
-    public List<GroupComment> getCommentList(Long boardSeq) {
+    public List<GroupComment> getCommentList(Long boardSeq, PageRequest pageRequest) {
 
         // 부모 댓글 리스트
-        List<Comment> groupCommentList = commentRepository.findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(
-            boardSeq,
-            CommentStatus.DELETE);
+        Page<Comment> groupCommentList =
+            commentRepository
+                .findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNull(
+                    boardSeq,
+                    CommentStatus.DELETE, pageRequest.of());
 
         if (groupCommentList.isEmpty()) {
             throw new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT_FOR_BOARD);
@@ -91,8 +95,13 @@ public class CommentService {
         }
 
         // 자식 댓글 리스트
-        List<Comment> childCommentList = commentRepository.findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNotNull(
-            boardSeq, CommentStatus.DELETE);
+        List<Comment> childCommentList =
+            commentRepository
+                .findByBoardSeqAndCommentStatusNotAndParentCommentSeqIsNotNullAndCommentGroupBetween(
+                    boardSeq,
+                    CommentStatus.DELETE,
+                    groupCommentResponseList.get(0).getCommentGroup(),
+                    groupCommentResponseList.get(groupCommentResponseList.size() - 1).getCommentGroup());
 
         ArrayList<ChildComment> childCommentResponseList = new ArrayList<>();
 
