@@ -25,7 +25,7 @@ public class CommentResponse {
         private String createdBy;
         private CommentStatus commentStatus;
 
-        private List<ChildComment> childCommentList; // 자식 댓글 리스트
+        private List<IncludedComment> includedCommentList; // 자식 댓글 리스트
 
         public static GroupComment from(Comment comment) {
             return GroupComment.builder()
@@ -45,7 +45,7 @@ public class CommentResponse {
     @Setter
     @Builder
     @AllArgsConstructor
-    public static class ChildComment {
+    public static class IncludedComment {
         private Long commentSeq;
         private String content;
         private Long parentCommentSeq;
@@ -56,8 +56,8 @@ public class CommentResponse {
         private String createdBy;
         private CommentStatus commentStatus;
 
-        public static ChildComment from(Comment comment) {
-            return ChildComment.builder()
+        public static IncludedComment from(Comment comment) {
+            return IncludedComment.builder()
                 .commentSeq(comment.getCommentSeq())
                 .content(comment.getContent())
                 .parentCommentSeq(comment.getParentCommentSeq())

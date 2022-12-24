@@ -2,7 +2,7 @@ package com.project.devgram.service;
 
 import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
-import com.project.devgram.dto.CommentResponse.ChildComment;
+import com.project.devgram.dto.CommentResponse.IncludedComment;
 import com.project.devgram.dto.CommentResponse.GroupComment;
 import com.project.devgram.entity.Comment;
 import com.project.devgram.entity.CommentAccuse;
@@ -103,17 +103,17 @@ public class CommentService {
                     groupCommentResponseList.get(0).getCommentGroup(),
                     groupCommentResponseList.get(groupCommentResponseList.size() - 1).getCommentGroup());
 
-        ArrayList<ChildComment> childCommentResponseList = new ArrayList<>();
+        ArrayList<IncludedComment> includedCommentResponseList = new ArrayList<>();
 
         // 자식 댓글이 존재할 경우, 부모 댓글의 필드(리스트)에 저장한다.
         if (!childCommentList.isEmpty()) {
             for (Comment comment : childCommentList) {
 
-                childCommentResponseList.add(ChildComment.from(comment));
+                includedCommentResponseList.add(IncludedComment.from(comment));
             }
 
             groupCommentResponseList.stream()
-                .forEach(group -> group.setChildCommentList(childCommentResponseList.stream()
+                .forEach(group -> group.setIncludedCommentList(includedCommentResponseList.stream()
                     .filter(child -> child.getCommentGroup().equals(group.getCommentGroup()))
                     .collect(
                         Collectors.toList())));

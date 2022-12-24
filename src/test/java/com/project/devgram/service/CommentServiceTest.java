@@ -158,8 +158,8 @@ class CommentServiceTest {
 
         // then
         assertEquals(result.size(), 11);
-        assertEquals(result.get(1).getChildCommentList().size(), 11);
-        assertEquals(result.get(2).getChildCommentList().size(), 0);
+        assertEquals(result.get(1).getIncludedCommentList().size(), 11);
+        assertEquals(result.get(2).getIncludedCommentList().size(), 0);
     }
 
     @DisplayName("댓글 조회 - 실패 - 해당 게시글에 댓글 존재하지 않음")
