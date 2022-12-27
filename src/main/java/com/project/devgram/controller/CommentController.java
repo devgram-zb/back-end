@@ -48,7 +48,7 @@ public class CommentController {
     /*
      * 신고 댓글 조회(관리자)
      */
-    @GetMapping("/accuse")
+    @GetMapping("/accuse/admin")
     public List<CommentDto> getAccusedCommentList() {
         return commentService.getAccusedCommentList();
     }
@@ -73,7 +73,7 @@ public class CommentController {
     /*
      * 특정 신고 댓글 신고 내역 조회
      */
-    @GetMapping("/accuse/detail")
+    @GetMapping("/accuse/detail/admin")
     public List<CommentAccuseDto> getAccusedCommentDetail(@RequestParam Long commentSeq) {
         return commentService.getAccusedCommentDetail(commentSeq);
     }
@@ -81,7 +81,7 @@ public class CommentController {
     /*
      * 댓글 상태 업데이트(관리자)
      */
-    @PutMapping("/status")
+    @PutMapping("/status/admin")
     public CommentDto updateCommentStatus(@RequestParam Long commentSeq, @RequestParam
         CommentStatus commentStatus) {
         return commentService.updateCommentStatus(commentSeq, commentStatus);
