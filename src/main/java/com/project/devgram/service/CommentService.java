@@ -49,12 +49,15 @@ public class CommentService {
 
         // 대댓글이 아닌 경우
         if (commentDto.getParentCommentSeq() == null) {
-            Users users = userRepository.findByUsername(commentDto.getCreatedBy()).orElseThrow(() -> new DevGramException(UserErrorCode.USER_NOT_EXIST));
+            System.out.println(commentDto.getCreatedBy());
+            Users users = userRepository.findByUsername(commentDto.getCreatedBy())
+                .orElseThrow(() -> new DevGramException(UserErrorCode.USER_NOT_EXIST));
 
             Comment comment = Comment.builder()
                 .content(commentDto.getContent())
                 .board(board)
                 .createdBy(users)
+                .updatedBy(users)
                 .commentStatus(CommentStatus.POST)
                 .build();
 
@@ -65,7 +68,8 @@ public class CommentService {
 
             // 대댓글인 경우
         } else {
-            Users users = userRepository.findByUsername(commentDto.getCreatedBy()).orElseThrow(() -> new DevGramException(UserErrorCode.USER_NOT_EXIST));
+            Users users = userRepository.findByUsername(commentDto.getCreatedBy())
+                .orElseThrow(() -> new DevGramException(UserErrorCode.USER_NOT_EXIST));
 
             Comment comment = Comment.builder()
                 .content(commentDto.getContent())
@@ -73,6 +77,7 @@ public class CommentService {
                 .commentGroup(commentDto.getCommentGroup())
                 .board(board)
                 .createdBy(users)
+                .updatedBy(users)
                 .commentStatus(CommentStatus.POST)
                 .build();
 
@@ -223,8 +228,9 @@ public class CommentService {
             comment = commentRepository.save(comment);
         }
 
-        Users users = userRepository.findByUsername(commentAccuseDto.getCreatedBy()).orElseThrow(() -> new DevGramException(
-            UserErrorCode.USER_NOT_EXIST));
+        Users users = userRepository.findByUsername(commentAccuseDto.getCreatedBy())
+            .orElseThrow(() -> new DevGramException(
+                UserErrorCode.USER_NOT_EXIST));
 
         CommentAccuse commentAccuse = CommentAccuse.builder()
             .comment(comment)
@@ -270,7 +276,11 @@ public class CommentService {
         Comment comment = commentRepository.findByCommentSeq(commentDto.getCommentSeq())
             .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
 
+        Users users = userRepository.findByUsername(commentDto.getUpdatedBy())
+            .orElseThrow(() -> new DevGramException(UserErrorCode.USER_NOT_EXIST));
+
         comment.setContent(commentDto.getContent());
+        comment.setUpdatedBy(users);
 
         return CommentDto.from(commentRepository.save(comment));
     }

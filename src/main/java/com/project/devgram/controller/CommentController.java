@@ -3,10 +3,12 @@ package com.project.devgram.controller;
 import com.project.devgram.dto.CommentAccuseDto;
 import com.project.devgram.dto.CommentDto;
 import com.project.devgram.dto.CommentResponse.GroupComment;
+import com.project.devgram.oauth2.token.TokenService;
 import com.project.devgram.service.CommentService;
 import com.project.devgram.type.CommentStatus;
 import com.project.devgram.util.pagerequest.CommentPageRequest;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
     private final CommentService commentService;
+    private final TokenService tokenService;
 
     /*
      * 댓글 등록 api
     */
     @PostMapping
-    public CommentDto addComment(@RequestBody CommentDto commentInput) {
+    public CommentDto addComment(@RequestBody CommentDto commentInput, HttpServletRequest request) {
+        commentInput.setCreatedBy(tokenService.getUsername(request.getHeader("Authentication")));
+
         return commentService.addComment(commentInput);
     }
 
@@ -60,7 +65,8 @@ public class CommentController {
      * 댓글 신고
      */
     @PostMapping("/accuse")
-    public CommentAccuseDto accuseComment(@RequestBody CommentAccuseDto commentAccuseDto) {
+    public CommentAccuseDto accuseComment(@RequestBody CommentAccuseDto commentAccuseDto, HttpServletRequest request) {
+        commentAccuseDto.setCreatedBy(tokenService.getUsername(request.getHeader("Authentication")));
         return commentService.accuseComment(commentAccuseDto);
     }
 
@@ -85,7 +91,8 @@ public class CommentController {
      * 댓글 내용 업데이트(작성자)
      */
     @PutMapping("/content")
-    public CommentDto updateCommentContent(@RequestBody CommentDto commentDto) {
+    public CommentDto updateCommentContent(@RequestBody CommentDto commentDto, HttpServletRequest request) {
+        commentDto.setUpdatedBy(tokenService.getUsername(request.getHeader("Authentication")));
         return commentService.updateCommentContent(commentDto);
     }
 }
