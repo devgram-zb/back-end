@@ -24,6 +24,7 @@ public class CommentResponse {
         private LocalDateTime createdAt;
         private String createdBy;
         private CommentStatus commentStatus;
+        private String imageUrl;
 
         private List<IncludedComment> includedCommentList; // 자식 댓글 리스트
 
@@ -37,6 +38,7 @@ public class CommentResponse {
                 .createdAt(comment.getCreatedAt())
                 .createdBy(comment.getCreatedBy().getUsername())
                 .commentStatus(comment.getCommentStatus())
+                .imageUrl(comment.getCreatedBy().getImageUrl())
                 .build();
         }
     }
@@ -55,6 +57,7 @@ public class CommentResponse {
         private LocalDateTime createdAt;
         private String createdBy;
         private CommentStatus commentStatus;
+        private String imageUrl;
 
         public static IncludedComment from(Comment comment) {
             return IncludedComment.builder()
@@ -67,6 +70,7 @@ public class CommentResponse {
                 .createdAt(comment.getCreatedAt())
                 .createdBy(comment.getCreatedBy().getUsername())
                 .commentStatus(comment.getCommentStatus())
+                .imageUrl(comment.getCreatedBy().getImageUrl())
                 .build();
         }
     }
