@@ -28,7 +28,7 @@ public class CommentController {
     private final TokenService tokenService;
 
     /*
-     * 댓글 등록 api
+     * 댓글 등록 api(로그인 필요)
     */
     @PostMapping
     public CommentDto addComment(@RequestBody CommentDto commentInput, HttpServletRequest request) {
@@ -38,7 +38,7 @@ public class CommentController {
     }
 
     /*
-     * 댓글 조회(보드)
+     * 댓글 조회(로그인 불필요)
      */
     @GetMapping
     public List<GroupComment> getCommentList(@RequestParam Long boardSeq, CommentPageRequest commentPageRequest) {
@@ -46,7 +46,7 @@ public class CommentController {
     }
 
     /*
-     * 신고 댓글 조회(관리자)
+     * 신고 댓글 조회(관리자 권한 필요)
      */
     @GetMapping("/accuse/admin")
     public List<CommentDto> getAccusedCommentList() {
@@ -54,7 +54,7 @@ public class CommentController {
     }
 
     /*
-     * 댓글 삭제
+     * 댓글 삭제(로그인 필요)
      */
     @DeleteMapping
     public String deleteComment(@RequestParam Long commentSeq) {
@@ -62,7 +62,7 @@ public class CommentController {
     }
 
     /*
-     * 댓글 신고
+     * 댓글 신고(로그인 필요)
      */
     @PostMapping("/accuse")
     public CommentAccuseDto accuseComment(@RequestBody CommentAccuseDto commentAccuseDto, HttpServletRequest request) {
@@ -71,7 +71,7 @@ public class CommentController {
     }
 
     /*
-     * 특정 신고 댓글 신고 내역 조회
+     * 특정 신고 댓글 신고 내역 조회(관리자 권한 필요)
      */
     @GetMapping("/accuse/detail/admin")
     public List<CommentAccuseDto> getAccusedCommentDetail(@RequestParam Long commentSeq) {
@@ -79,7 +79,7 @@ public class CommentController {
     }
 
     /*
-     * 댓글 상태 업데이트(관리자)
+     * 댓글 상태 업데이트(관리자 권한 필요)
      */
     @PutMapping("/status/admin")
     public CommentDto updateCommentStatus(@RequestParam Long commentSeq, @RequestParam
@@ -88,7 +88,7 @@ public class CommentController {
     }
 
     /*
-     * 댓글 내용 업데이트(작성자)
+     * 댓글 내용 업데이트(로그인 필요)
      */
     @PutMapping("/content")
     public CommentDto updateCommentContent(@RequestBody CommentDto commentDto, HttpServletRequest request) {
