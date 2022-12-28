@@ -82,7 +82,7 @@ public class CommentController {
      * 댓글 상태 업데이트(관리자 권한 필요)
      */
     @PutMapping("/status/admin")
-    public CommentDto updateCommentStatus(@RequestParam Long commentSeq, @RequestParam
+    public String updateCommentStatus(@RequestParam Long commentSeq, @RequestParam
         CommentStatus commentStatus) {
         return commentService.updateCommentStatus(commentSeq, commentStatus);
     }

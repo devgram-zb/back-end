@@ -187,7 +187,7 @@ public class CommentService {
                 commentRepository.save(target);
             }
 
-            return "해당 commentGroup에 속한 댓글들이 삭제 되었습니다.";
+            return String.format("%d번 commentGroup에 해당하는 댓글들이 삭제 되었습니다.", comment.getCommentGroup());
         }
 
         // 부모 댓글이 삭제되는 경우 -> 해당 댓글과 자식 댓글 삭제
@@ -205,14 +205,14 @@ public class CommentService {
                 commentRepository.save(target);
             }
 
-            return "부모 댓글과 자식 댓글이 삭제되었습니다.";
+            return String.format("%d번 댓글과 해당 댓글의 자식 댓글들이 삭제 되었습니다.", comment.getCommentSeq());
 
             // 자식 댓글이 삭제되는 경우 -> 해당 댓글만 삭제
         } else {
             comment.setCommentStatus(CommentStatus.DELETE);
             commentRepository.save(comment);
 
-            return "자식 댓글이 삭제되었습니다.";
+            return String.format("%d번 댓글이 삭제 되었습니다.", comment.getCommentSeq());
         }
     }
 
@@ -258,15 +258,21 @@ public class CommentService {
     /*
      * 댓글 상태 업데이트(관리자)
      */
-    public CommentDto updateCommentStatus(Long commentSeq, CommentStatus commentStatus) {
-        Comment comment = commentRepository.findByCommentSeq(commentSeq)
-            .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
+    public String updateCommentStatus(Long commentSeq, CommentStatus commentStatus) {
 
-        comment.setCommentStatus(commentStatus);
+        if (commentStatus.equals(CommentStatus.POST) || commentStatus.equals(CommentStatus.ACCUSE)) {
+            Comment comment = commentRepository.findByCommentSeq(commentSeq)
+                .orElseThrow(() -> new DevGramException(CommentErrorCode.NOT_EXISTENT_COMMENT));
 
-        commentRepository.save(comment);
+            comment.setCommentStatus(commentStatus);
 
-        return CommentDto.from(comment);
+            commentRepository.save(comment);
+
+            return String.format("%d번 댓글이 %s 상태로 변경되었습니다.", commentSeq, commentStatus);
+
+        } else {
+            return deleteComment(commentSeq);
+        }
     }
 
     /*
