@@ -1,5 +1,6 @@
 package com.project.devgram.type;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,4 +12,14 @@ public enum CommentStatus {
     DELETE("삭제 상태");
 
     private final String description;
+
+    @JsonCreator
+    public static CommentStatus from(String value) {
+        for (CommentStatus commentStatus: CommentStatus.values()) {
+            if (commentStatus.name().equals(value)) {
+                return commentStatus;
+            }
+        }
+        return null;
+    }
 }
