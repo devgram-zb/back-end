@@ -15,25 +15,25 @@ public class CategoryContoller {
 
 	private final CategoryService categoryService;
 
-	@GetMapping
+	@GetMapping("/admin")
 	public List<CategoryDto> list() {
 
 		return categoryService.list();
 	}
 
-	@PostMapping
+	@PostMapping("/admin")
 	public boolean add(@RequestBody CategoryDto parameter) {
 
 		return categoryService.add(parameter);
 	}
 
-	@PostMapping("/update")
+	@PostMapping("/update/admin")
 	public boolean update(@RequestBody CategoryDto parameter) {
 
 		return categoryService.update(parameter);
 	}
 
-	@PostMapping("/delete")
+	@PostMapping("/delete/admin")
 	public boolean del(@RequestBody CategoryDto parameter) {
 
 		return categoryService.del(parameter.getCategory_Seq());

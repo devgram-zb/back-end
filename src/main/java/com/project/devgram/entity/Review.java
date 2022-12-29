@@ -43,10 +43,7 @@ public class Review implements ReviewCode {
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private LocalDateTime createdAt;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "username")
-	@JsonBackReference
-	private Users users;
+	private String username;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "productSeq")

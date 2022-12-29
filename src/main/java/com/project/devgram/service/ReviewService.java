@@ -41,19 +41,19 @@ public class ReviewService {
 			throw new DevGramException(ReviewErrorCode.PRODUCT_NOT_EXIST);
 		}
 
-		Review review = reviewRepository.findByUsersAndProduct(users, product);
+		Review review = reviewRepository.findByUsernameAndProduct(parameter.getUsername(), product);
 
 		if (review != null) {
 			throw new DevGramException(ReviewErrorCode.ALREADY_REVIEW);
 		}
 
-			review = Review.builder()
+			 review = Review.builder()
 			.content(parameter.getContent())
 			.mark(parameter.getMark())
 			.status(Review.STATUS_POST)
 			.createdAt(LocalDateTime.now())
 			.product(product)
-			.users(users)
+			.username(parameter.getUsername())
 			.build();
 
 		reviewRepository.save(review);
@@ -66,10 +66,9 @@ public class ReviewService {
 
 	}
 
-	public Page<Review> adminList(Pageable pageable) {
-		int page = (pageable.getPageNumber() == 0) ? 0 : (pageable.getPageNumber() - 1);
-		pageable = PageRequest.of(page, 5, Sort.by(Direction.DESC, "reviewSeq"));
-		return reviewRepository.findAll(pageable);
+	public List<ReviewDto> adminList(Pageable pageable) {
+		List<Review> reviews = reviewRepository.findAll();
+		return ReviewDto.of(reviews);
 
 	}
 

@@ -33,7 +33,6 @@ public class Product implements ProductCode {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long productSeq;
-
 	private String title;
 	private String content;
 	private Integer hits;
@@ -43,6 +42,8 @@ public class Product implements ProductCode {
 	private String status;
 	private int reviewCount;
 	private double totalRating;
+
+	private String imageUrl;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "product")

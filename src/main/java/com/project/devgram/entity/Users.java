@@ -48,20 +48,6 @@ public class Users extends BaseEntity {
 	@OneToMany(mappedBy = "follower",cascade = CascadeType.ALL,orphanRemoval = true)
 	private List<Follow> followerList = new ArrayList<>() ;
 
-	@Builder.Default
-	@OneToMany(mappedBy = "users")
-	@JsonManagedReference
-	private List<Review> reviewList = new ArrayList<>();
-
-	@Builder.Default
-	@OneToMany(mappedBy = "users")
-	@JsonManagedReference
-	private List<ReviewAccuse> reviewAccuseList = new ArrayList<>();
-
-	@Builder.Default
-	@OneToMany(mappedBy = "users")
-	@JsonManagedReference
-	private List<ProductLike> productLikes = new ArrayList<>();
 
 
 

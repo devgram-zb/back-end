@@ -1,15 +1,15 @@
 package com.project.devgram.service;
-
-import static com.project.devgram.entity.QReview.review;
-
 import com.project.devgram.dto.ReviewAccuseDto;
 import com.project.devgram.dto.ReviewDto;
 import com.project.devgram.entity.Review;
 import com.project.devgram.entity.ReviewAccuse;
+import com.project.devgram.entity.Users;
 import com.project.devgram.exception.DevGramException;
 import com.project.devgram.exception.errorcode.ReviewAccuseErrorCode;
+import com.project.devgram.exception.errorcode.ReviewErrorCode;
 import com.project.devgram.repository.ReviewAccuseRepository;
 import com.project.devgram.repository.ReviewRepository;
+import com.project.devgram.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +24,14 @@ public class ReviewAccuseService {
 
 	private final ReviewAccuseRepository reviewAccuseRepository;
 	private final ReviewRepository reviewRepository;
+	private final UserRepository userRepository;
 	public static final Sort sortByReportedAtDesc = Sort.by(Direction.DESC, "reportAt");
 
 	public ReviewAccuseDto reviewAccuse(ReviewAccuseDto parameter) {
-
+		Users users = userRepository.findByUsername(parameter.getUsername()).orElse(null);
+		if (users == null) {
+			throw new DevGramException(ReviewErrorCode.USER_NOT_EXIST);
+		}
 		Review review = reviewRepository.findByReviewSeq(parameter.getReviewSeq()).orElse(null);
 		if (review == null) {
 			throw new DevGramException(ReviewAccuseErrorCode.REVIEW_NOT_EXIST);
@@ -46,6 +50,7 @@ public class ReviewAccuseService {
 			.review(review)
 			.content(parameter.getContent())
 			.reportAt(LocalDateTime.now())
+			.username(parameter.getUsername())
 			.build();
 
 		return ReviewAccuseDto.of(reviewAccuseRepository.save(reviewAccuse));

@@ -1,6 +1,7 @@
 package com.project.devgram.dto;
 
 import com.project.devgram.entity.ProductLike;
+import com.project.devgram.entity.Users;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -33,7 +34,7 @@ public class ProductLikeDto {
 	public static ProductLikeDto of(ProductLike productLike){
 		return ProductLikeDto.builder()
 			.productSeq(productLike.getProduct().getProductSeq())
-			.username(productLike.getUsers().getUsername())
+			.username(productLike.getUsername())
 			.build();
 	}
 }

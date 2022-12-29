@@ -47,7 +47,7 @@ public class ReviewAccuseDto {
 			.content(reviewAccuse.getContent())
 			.reportAt(reviewAccuse.getReportAt())
 			.reviewSeq(reviewAccuse.getReview().getReviewSeq())
-			.username(reviewAccuse.getUsers().getUsername())
+			.username(reviewAccuse.getUsername())
 			.build();
 	}
 

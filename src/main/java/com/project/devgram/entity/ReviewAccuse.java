@@ -40,9 +40,6 @@ public class ReviewAccuse {
 	@JsonBackReference
 	private Review review;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "username")
-	@JsonBackReference
-	private Users users;
+	private String username;
 
 }

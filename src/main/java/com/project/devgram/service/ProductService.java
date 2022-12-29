@@ -1,18 +1,20 @@
 package com.project.devgram.service;
 
 import com.project.devgram.dto.ProductDto;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-	boolean write(ProductDto parameter); // 글 작성(일반)
+	boolean write(ProductDto parameter, MultipartFile file) throws IOException;
 
 	List<ProductDto> confirm(Pageable pageable); // admin 제품관리
 
 	List<ProductDto> list(Pageable pageable); // 전체 list(Approve)
 
-	List<ProductDto> productList() ; // 페이징 없는 전체 리뷰 List(New!)
+	List<ProductDto> productList(); // 페이징 없는 전체 리뷰 List(New!)
 
 	boolean update(ProductDto parameter); // product 업데이트
 

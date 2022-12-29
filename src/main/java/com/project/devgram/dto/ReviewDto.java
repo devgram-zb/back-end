@@ -53,7 +53,7 @@ public class ReviewDto {
 			.status(review.getStatus())
 			.createdAt(review.getCreatedAt())
 			.productSeq(review.getProduct().getProductSeq())
-			.username(review.getUsers().getUsername())
+			.username(review.getUsername())
 			.build();
 	}
 
@@ -66,7 +66,7 @@ public class ReviewDto {
 			.status(review.getStatus())
 			.createdAt(review.getCreatedAt())
 			.productSeq(review.getProduct().getProductSeq())
-			.username(review.getUsers().getUsername())
+			.username(review.getUsername())
 			.build();
 	}
 }

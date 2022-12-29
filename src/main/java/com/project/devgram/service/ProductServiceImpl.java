@@ -5,11 +5,13 @@ import com.project.devgram.entity.Category;
 import com.project.devgram.entity.Product;
 import com.project.devgram.repository.CategoryRepository;
 import com.project.devgram.repository.ProductRepository;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -17,14 +19,18 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
+	private final ImageUploader uploader;
 
 	@Override
-	public boolean write(ProductDto parameter) {
+	public boolean write(ProductDto parameter, MultipartFile file) throws IOException {
 
 		Category category = categoryRepository.findById(parameter.getCategory_Seq()).orElse(null);
 		if (category == null) {
 			return false;
 		}
+
+		String imageUrl = uploader.upload(file,"PRODUCT");
+
 		Product product = Product.builder()
 			.title(parameter.getTitle())
 			.content(parameter.getContent())
@@ -34,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
 			.rating(0.0)
 			.status(Product.STATUS_CHECK)
 			.category(category)
+			.imageUrl(imageUrl)
 			.build();
 
 		productRepository.save(product);

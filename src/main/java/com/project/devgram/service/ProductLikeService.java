@@ -33,7 +33,7 @@ public class ProductLikeService {
 
 		ProductLike productLike = ProductLike.builder()
 			.product(product)
-			.users(users)
+			.username(productLikeDto.getUsername())
 			.build();
 		productLikeRepository.save(productLike);
 
@@ -63,14 +63,14 @@ public class ProductLikeService {
 		ProductLikeDto productLikeDto) {
 		Product product = productRepository.findById(productLikeDto.getProductSeq()).orElse(null);
 
-		return productLikeRepository.findProductLikeByUsersUsernameAndProductProductSeq(
+		return productLikeRepository.findProductLikeByUsernameAndProductProductSeq(
 			productLikeDto.getUsername(),
 			productLikeDto.getProductSeq());
 	}
 
 	public List<ProductLikeDto> list(String username) {
 
-		List<ProductLike> productLikes = productLikeRepository.findAllByUsersUsername(username);
+		List<ProductLike> productLikes = productLikeRepository.findAllByUsername(username);
 		return ProductLikeDto.of(productLikes);
 	}
 }

@@ -29,14 +29,11 @@ public class ProductLike {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long productLikeSeq;
 
+	private String username;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_seq")
 	@JsonBackReference
 	private Product product;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "username")
-	@JsonBackReference
-	private Users users;
 }

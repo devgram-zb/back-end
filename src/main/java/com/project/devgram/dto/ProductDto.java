@@ -18,24 +18,28 @@ import lombok.Setter;
 @Setter
 public class ProductDto {
 
-	long product_Seq;
-	String title;
-	String content;
-	Integer hits;
-	double rating;
-	Integer likeCount;
-	double price;
+	private long product_Seq;
+	private String title;
+	private String content;
+	private Integer hits;
+	private double rating;
+	private Integer likeCount;
+	private double price;
 
-	String status; // 상태
+	private String status; // 상태
 
-	long category_Seq; // 카테고리 id
+	private long category_Seq; // 카테고리 id
 
-	int reviewCount;
-	double totalRating;
+	private int reviewCount;
+	private double totalRating;
 
 	//카테고리
 	private String categoryName;
 	private String categoryColor;
+
+	private String imageUrl;
+
+
 
 	public static List<ProductDto> of(List<Product> products) {
 		if (products != null) {
@@ -61,6 +65,7 @@ public class ProductDto {
 			.category_Seq(product.getCategory().getCategory_Seq())
 			.categoryColor(product.getCategory().getColor())
 			.categoryName(product.getCategory().getName())
+			.imageUrl(product.getImageUrl())
 			.build();
 
 	}
