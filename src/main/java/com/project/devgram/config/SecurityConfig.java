@@ -67,7 +67,7 @@ public class SecurityConfig {
                 .userService(principalOauth2UserService);
         */
 
-        http.addFilterBefore(new JwtAuthFilter(authenticationManager((AuthenticationConfiguration) authenticationManager),tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
