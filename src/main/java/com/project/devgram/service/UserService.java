@@ -59,6 +59,7 @@ public class UserService {
             user.setJob(dto.getJob());
             user.setAnnual(dto.getAnnual());
             user.setUserSeq(dto.getUserSeq());
+            user.setRole(dto.getRole());
             user.setImageUrl(imageUrl);
 
 
