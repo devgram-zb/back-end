@@ -4,9 +4,12 @@ package com.project.devgram.config;
 import com.project.devgram.oauth2.principal.PrincipalDetailsService;
 import com.project.devgram.oauth2.token.JwtAuthFilter;
 import com.project.devgram.oauth2.token.TokenService;
+import com.project.devgram.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -25,6 +28,7 @@ public class SecurityConfig {
 
     private final CorsConfig corsConfig;
     private final TokenService tokenService;
+    private final UserRepository userRepository;
 
 
     @Bean
@@ -32,10 +36,15 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -58,7 +67,7 @@ public class SecurityConfig {
                 .userService(principalOauth2UserService);
         */
 
-        http.addFilterBefore(new JwtAuthFilter(tokenService,principalDetailsService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(authenticationManager((AuthenticationConfiguration) authenticationManager),tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

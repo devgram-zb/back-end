@@ -74,6 +74,16 @@ public class TokenController {
             return new CommonDto<>(HttpStatus.OK.value(), tokens);
 
     }
+
+    @GetMapping("/role")
+    public CommonDto<String> getRoles(HttpServletRequest request){
+
+        String token = request.getHeader("Authentication");
+
+       String grant =  tokenService.getTokenGrant(token);
+
+       return new CommonDto<>(HttpStatus.OK.value(),grant);
+    }
     
     
 
